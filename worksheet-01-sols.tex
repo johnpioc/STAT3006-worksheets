@@ -1,0 +1,271 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{changepage}
+\usepackage[a4paper, margin=0.5in]{geometry}
+
+\setstretch{1.3}
+
+\hbadness=10000
+\setlength{\parindent}{0pt}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\begin{document}
+
+    % HEADER 
+    \begin{center}
+        \LARGE \textbf{STAT3006 Worksheet 01}
+    \end{center}
+
+    \rule{\textwidth}{0.3pt}
+
+    % Question 1
+    \large \textbf{1. Background: Vector Norms}
+
+    Let $\mathbf{x} \in \mathbb{R}^d$. The $\ell_p$ norm is defined as 
+
+    \begin{align*}
+        ||\mathbf{x}||_p \triangleq \left(\sum_{i = 1}^d |x_i|^p\right)^{1/p}
+    \end{align*}
+
+    \begin{adjustwidth}{1em}{1em}
+    % Question 1a
+    (a) Prove that $||\mathbf{x}||_2 \leq ||\mathbf{x}||_1$, for any $\mathbf{x} \in \mathbb{R}^d$
+    \\ 
+
+    \textbf{Answer:} For $||\mathbf{x}||_2$ we have \\ 
+
+    \begin{align*}
+        ||\mathbf{x}||_2 &= \sqrt{\sum_{i = 1}^d (x_i)^2} \\ 
+        ||\mathbf{x}||_2^2 &= \sum_{i = 1}^d (x_i)^2
+    \end{align*}
+
+    We have $||\mathbf{x}||$ given by 
+
+    \begin{align*}
+        ||\mathbf{x}||_1 &= \sum_{i = 1}^d |x_i| \\ 
+        ||\mathbf{x}||_1^2 &= \left(\sum_{i = 1}^d |x_i| \right)^2 \\
+                           &= \sum_{i = 1}^d |x_i|^2 + \sum_{i \neq j} |x_i| |x_j| \\ 
+                           &\geq ||\mathbf{x}||_2^2
+    \end{align*}
+
+    The result follows. \\ 
+
+    % Question 1b
+    (b) Infinity norm is defined as $||\mathbf{x}||_\infty \triangleq \max\limits_{i} |x_i|$. Prove
+    that 
+
+    \begin{align*}
+        ||\mathbf{x}||_\infty = \lim_{p\to\infty}||\mathbf{x}||_p
+    \end{align*}
+
+    \textbf{Answer:} Let $M = ||\mathbf{x}||_\infty = \max\limits_{i}|x_i|$. Our goal is to show 
+    that 
+
+    \begin{align*}
+        \lim_{p\to\infty}\left(\sum_{i = 1}^d |x_i|^p\right)^{1/p} = M
+    \end{align*}
+
+    Since $M$ is an upper bound, we know that $|x_i| \leq M, \forall i$. So we have,
+
+    \begin{align*}
+        \sum_{i = 1}^d |x_i|^p &\leq \sum_{i = 1}^d M^p \\
+                               &= d \cdot M^p \\ 
+        \Rightarrow (\sum_{i = 1}^d |x_i|^p)^{1/p} &\leq (d\cdot M^p)^{1/p} \\ 
+        \Rightarrow ||\mathbf{x}||_p &\leq d^{1/p} \cdot M \numberthis
+    \end{align*}
+
+    Since $M$ is one of the elements in the sum, 
+
+    \begin{align*}
+        \sum_{i = 1}^d |x_i|^p &\geq M^p \\ 
+        \Rightarrow \left(\sum_{i = 1}^d |x_i|^p\right)^{1/p} &\geq M \\ 
+        \Rightarrow ||\mathbf{x}||_p &\geq M
+    \end{align*}
+
+    We can now construct an inequality from (1) and (2) and apply Squeeze Theorem
+
+    \begin{align*}
+        M \leq ||\mathbf{x}||_p \leq d^{1/p} \cdot M \\ 
+        \lim_{p\to\infty} M \leq ||\mathbf{x}||_p \leq \lim_{p\to\infty} d^{1/p} \cdot M \\ 
+        M \leq ||\mathbf{x}||_p \leq M
+    \end{align*}
+
+    Therefore $||\mathbf{x}||_p = M = ||\mathbf{x}||_\infty$ as $p\to\infty$ \\
+
+    \end{adjustwidth}
+
+    % Question 2
+    \textbf{2. Background: Weak and Strong Law of Large Numbers}
+
+    Let $x_1, x_2, \dots$ be IID random numbers with 
+
+    \begin{align*}
+        &\mathbb{E}[x_i] = \mu, &\text{Var}(x_i) = \sigma^2 < \infty
+    \end{align*}
+
+    and define sample mean 
+
+    \begin{align*}
+        \bar{x}_n = \frac{1}{n}\sum_{i = 1}^n x_i
+    \end{align*}
+
+    \begin{adjustwidth}{1em}{1em}
+    
+    % Question 2a
+    (a) Show that 
+
+    \begin{align*}
+        \mathbb{E}[\bar{x}_n] = \mu \text{ and } \text{Var}(\bar{x}_n) = \frac{\sigma^2}{n} 
+    \end{align*}
+
+    \textbf{Answer:} 
+
+    \begin{align*}
+        \mathbb{E}[\bar{x}_n] &= \mathbb{E}\left[\frac{1}{n}\sum_{i=1}^n x_i\right] \\ 
+                              &= \frac{1}{n}\sum_{i = 1}^n \mathbb{E}[x_i] \\ 
+                              &= \frac{n\mu}{n} \\ 
+                              &= \mu
+                              \\ 
+        \text{Var}(\bar{x}_n) &= \text{var}\left(\frac{1}{n}\sum_{i = 1}^n x_i\right) \\ 
+                              &= \frac{1}{n^2} \sum_{i = 1}^n \text{Var}(x_i) \\ 
+                              &= \frac{n\sigma^2}{n^2} \\ 
+                              &= \frac{\sigma^2}{n}
+    \end{align*}
+
+    % Question 2b
+    (b) \textbf{Convergence in Probability}. If $y$ is a random variable with finite variance,
+    then for any $\epsilon > 0$, 
+
+    \begin{align*}
+        \mathbb{P}(|y - \mathbb{E}[y]| > \epsilon) \leq \frac{\text{Var}(y)}{\epsilon^2}
+    \end{align*}
+
+    This inequality is often referred to as \textit{Chebyshev's Inequality}. Using Chebyshev's 
+    Inquality prove that, 
+
+    \begin{align*}
+        \mathbb{P}(|\bar{x}_n - \mu| > \epsilon) \to 0
+    \end{align*}
+
+    That is, $\bar{x}_n$ converges to $\mu$ in probability, and denoted as 
+
+    \begin{align*}
+        \bar{x}_n \xrightarrow{P} \mu
+    \end{align*}
+
+    \textbf{Answer:} Substituting results from part (a) into Chebyshev's inequality we have 
+
+    \begin{align*}
+        \mathbb{P}(|\bar{x}_n - \mu| > \epsilon) &\leq \frac{\sigma^2}{n \epsilon} \\
+        \lim_{n\to\infty}\mathbb{P}(|\bar{x}_n - \mu > \epsilon) &\leq \lim_{n\to\infty}\left(
+        \frac{\sigma^2}{n\epsilon}\right) \\ 
+                                                                 &= 0
+    \end{align*}
+
+    Since $0 \leq \mathbb{P}(\dots) \leq 1$, we have 
+
+    \begin{align*}
+        \lim_{n\to\infty}\mathbb{P}(|\bar{x}_n - \mu| > \epsilon) = 0
+    \end{align*}
+
+    Therefore $\bar{x}_n$ converges to $\mu$ in probability. \\ 
+
+    % Question 2c
+    (c) \textbf{Almost-Sure Convergence}. Another mode of convergence for random variables is that
+    of almost-sure convergence, i.e.,
+    
+    \begin{align*}
+        \mathbb{P}\left(\lim_{n\to\infty}\bar{x}_n = \mu\right) = 1
+    \end{align*}
+
+    That is, with probability one, the sequence $\bar{x}_n$ converges to $\mu$. \\ 
+
+    Give a brief intuitive explanation of the difference between convergence in probability 
+    and almost sure convergence. \\ 
+
+    \textbf{Answer:} With convergence in probably, it says that as $n$ increases, the probability
+    that the random variable $\bar{x}_n$ is far from $\mu$ approaches zero. However due to things
+    like outliers, even at large $n$ the true probability might not even be exactly zero. Almost
+    sure convergence is a stronger condition as it says that once $\bar{x}_n$ reaches $\mu$ at a 
+    large-enough $n$, it will stay at $\mu$ with probability 1. \\
+
+    \end{adjustwidth}
+
+    % Question 3 
+    \textbf{3. Computation Efficiency and Vectorization}
+
+    We compare two methods for calculating the distance vector $d \in \mathbb{R}^n$ between a 
+    query $\mathbf{q} \in \mathbb{R}^d$ and a training set $\{\mathbf{x}_i\}_{i = 1}^n \in 
+    \mathbb{R}^d$. Let $\mathbf{X} \in \mathbb{R}^{n x d}$ denote the data matrix whose 
+    $i$-th row is $\mathbf{x}_i^T$ \\
+
+    \begin{adjustwidth}{1em}{1em}
+    
+    % Question 3a
+    (a) Recall the algebraic expansion of the squared Euclidean distance to a single point: 
+
+    \begin{align*}
+        ||\mathbf{x}_i - \mathbf{q}||_2^2 = \mathbf{x}_i^T \mathbf{x}_i - 2\mathbf{x}_i^T 
+        \mathbf{q} + \mathbf{q}^T\mathbf{q} \numberthis
+    \end{align*}
+
+    Express the vector of all $n$ squared distances $\mathbf{d}^2 \in \mathbb{R}^n$ using matrix 
+    operations such as $\mathbf{X}\mathbf{X}^T$ and $\mathbf{X}\mathbf{q}$. This is often
+    called the vectorised approach. \\
+
+    \textbf{Answer:} The vector $\mathbf{d}^2$ can be expressed as 
+    
+    \begin{align*}
+        \mathbf{d}^2 = \begin{bmatrix}
+            ||\mathbf{x}_1 - \mathbf{q}||_2^2 \\ \vdots \\ ||\mathbf{x}_n - \mathbf{q}||_2^2
+        \end{bmatrix}
+    \end{align*}
+
+    From (2) we start with evaluating the first term. It is the squared $\ell_2$ norm of the 
+    $i$-th row of $\mathbf{X}$. It can represented by $\mathbf{x}_i^T\mathbf{x}_i = \langle 
+    \mathbf{x}_i, \mathbf{x}_i \rangle$. Consider the feature matrix $\mathbf{X}$, we can grab
+    every $\langle \mathbf{x}_i, \mathbf{x}_i \rangle, \forall i$ by diag$(\mathbf{XX}^T)$ \\ 
+
+    For the second term, it can trivially be converted to $-2\mathbf{Xq}$. Lastly for the third
+    term, it can also be trivially converted to matrix form by using the $n$-dimensional
+    identity matrix $\Rightarrow (\mathbf{q}^T\mathbf{q})\mathbf{1}_n$
+
+    \begin{align*}
+        \therefore \mathbf{d^2} = \text{diag}(\mathbf{XX^T}) - 2\mathbf{Xq} 
+        + \mathbf{q}^T\mathbf{q1}_n
+    \end{align*}
+
+    % Question 3b
+    (b) The $\textit{naive alternative}$ uses explicit loops over the rows of $\mathbf{X}$ and 
+    computes each distance individually:
+
+    \begin{align*}
+        &d_i = \sqrt{\sum_{j = 1}^d (\mathbf{X}_{ij} - q_j)^2}, &i = 1,\dots,n
+    \end{align*}
+
+    Explain the hardware-level and computational advantages of the vectorised approach over the 
+    naive method. \\ 
+
+    \textbf{Answer:} Matrix multiplication involves many independent steps. That is, we don't 
+    have to wait
+    for the outcome of one row being multiplied to a column to evaluate the current row
+    being multiplied to the current column. This allows us to compute the cells of the 
+    product in parallel, i.e. SIMD (single instruction, multiple data). Libraries like
+    numpy utilize SIMD for matrix multiplication, which is way faster than the naive method
+    as it waits for the current row before moving onto the next \\
+
+    \end{adjustwidth}
+
+    % Question 4
+    \textbf{4. Programming Benchmarking}
+
+    Implement the two methods discussed in Question 3 and record the time difference for 
+    $n = 1,000,000$ and $d = 10$. \\ 
+
+    \textbf{Answer:} Please see code/w1q4.ipynb
+
+\end{document}
