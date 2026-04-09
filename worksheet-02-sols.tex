@@ -1,0 +1,281 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{changepage}
+\usepackage[a4paper, margin=0.5in]{geometry}
+
+\setstretch{1.3}
+
+\hbadness=10000
+\setlength{\parindent}{0pt}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\begin{document}
+    % HEADER 
+    \begin{center}
+        \Large \textbf{STAT3006 Worksheet 02}
+    \end{center}
+
+    \rule{\textwidth}{0.3pt}
+
+    % Question 1
+    \large \textbf{1. Bias-Variance Decomposition}
+
+    \begin{adjustwidth}{1em}{1em}
+        % Question 1a
+        (a) Let $h$ be a random estimator of a deterministic target $h*$. Assume expectations are 
+        taken with respect to the randomness in $h$. Show that 
+
+        \begin{align*}
+            \mathbb{E}[(h - h^*)^2] = \text{Var}(h) + (\mathbb{E}[h] - h^*)^2
+        \end{align*}
+
+        \textbf{Answer:} We evaluate the variance of $(h - h^*)$. That is, 
+
+        \begin{align*}
+            \text{Var}(h - h^*) &= \mathbb{E}[(h - h^*)^2] - (\mathbb{E}[h - h^*])^2 \\ 
+            \Rightarrow \text{Var}(h) + \text{Var}(h^*) &= \mathbb{E}[(h - h^*)^2] - 
+            (\mathbb{E}[h - h^*])^2 \\ 
+            \Rightarrow \text{Var}(h) &= \mathbb{E}[(h - h^*)^2] - (\mathbb{E}[h - h^*])^2 \\ 
+            \Rightarrow \therefore \mathbb{E}[(h - h^*)^2] &= \text{Var}(h) + (\mathbb{E}[h - h^*])
+            ^2
+        \end{align*}
+
+        % Question 1b
+        (b) In the lecture, we saw that for a fixed \textit{test point} $\mathbf{x}_0$, the 
+        regression tree estimator $f^{(n)}(\mathbf{x}_0)$ satisfies the conditional 
+        bias-variance decomposition 
+
+        \begin{align*}
+            \mathbb{E}\left[(f^{(n)}(\mathbf{x}_0) - f^*(\mathbf{x}_0))^2\right] &= \mathbb{E}
+            \bigg[\text{Var}(f^{(n)}(\mathbf{x}_0) | R^{(n)}(\mathbf{x}_0)) +
+            (\mathbb{E}[f^{(n)}(\mathbf{x}_0) | R^{(n)}(\mathbf{x}_0)] - f^{*}(\mathbf{x}_0))^2
+            \bigg] \numberthis
+        \end{align*}
+
+        Here $R^(n)(\mathbf{x}_0)$ denotes the random region (e.g. the leaf of the tree) containing
+        $\mathbf{x}_0$, whose randomness arises from the training data. Thus (1) can be interpreted
+        as the usual bias-variance decomposition applied \textit{conditionally on the random
+        region}, and then averaged over the randomness of the training sample. \\
+
+        Use the bias-variance decomposition to prove (1) \\
+
+        \textbf{Answer:} For easier notation we set,
+
+        \begin{align*}
+            A &= f^(n)(\mathbf{x}_0) \\ 
+            B &= f^*(\mathbf{x}_0) \\ 
+            C &= R^{(n)}(\mathbf{x}_0)
+        \end{align*}
+
+        We want to show 
+
+        \begin{align*}
+            \mathbb{E}[(A - B)^2] = \mathbb{E}\{\text{var}(A | C)  + (\mathbb{E}[A | C] - B)^2\}
+            \numberthis
+        \end{align*}
+
+        From Part (a) we have 
+
+        \begin{align*}
+            \mathbb{E}[(A - B)^2] = \text{var}(A) + (\mathbb{E}[A] - B)^2
+        \end{align*}
+
+        Using the law of total variance for $\text{var}(A)$ conditioning on $C$ we have 
+
+        \begin{align*}
+            \mathbb{E}[(A - B)^2] = \mathbb{E}[\text{var}(A | C)] + \text{var}(\mathbb{E}[A | C])
+            + (\mathbb{E}[A] - B)^2 \numberthis
+        \end{align*}
+
+        Now evaluate $\text{var}(\mathbb{E}[A | C] - B)$ 
+
+        \begin{align*}
+            \text{var}(\mathbb{E}[A | C] - B) &= \mathbb{E}[(\mathbb{E}[A | C] - B)^2]
+            - (\mathbb{E}\{\mathbb{E}[A | C] - B\})^2 \\ 
+            \text{var}(\mathbb{E}[A | C]) &= \mathbb{E}[(\mathbb{E}[A | C] - B)^2] 
+            - (\mathbb{E}[A] - B)^2 \text{ (since $B$ is fixed and using tower property)}
+        \end{align*}
+
+        Subbing this result into (3) we get 
+
+        \begin{align*}
+            \mathbb{E}[(A - B)^2] &= \mathbb{E}[\text{var}(A | C)] + \mathbb{E}[(\mathbb{E}[A | C]
+            - B)^2] + (\mathbb{E}[A] - B)^2 + (\mathbb{E}[A] - B)^2 \\ 
+            \mathbb{E}[(A - B)^2] &= \mathbb{E}[\text{var}(A | C)] + \mathbb{E}[(\mathbb{E}[A |
+            C] - B)^2] \\ 
+            \therefore \mathbb{E}[(A - B)^2] &= \mathbb{E}\bigg[\text{var}(A | C) + (\mathbb{E}[A |
+            C] - B)^2\bigg]
+        \end{align*}
+    \end{adjustwidth}
+
+    % Question 2
+    \newpage
+    \textbf{2. Entropy and Information Gain in Decision Trees} \\ 
+
+    Decision trees are widely used classification models that recursively partition the input space.
+    At each node of the tree, the algorithm chooses a split of the data that makes the resulting
+    subsets as pure as possible, meaning that the observations in each subset mostly belong to a
+    single class. \\ 
+
+    To quantify the purity of a node, decision tree algorithms use an \textit{impurity} meansure.
+    One of the most common meausres is \textit{entropy}, which originates from information theory.
+    Intuitively, entropy measures the \textit{uncertainty} or \textit{disorder} in a set of class
+    labels:
+
+    \begin{itemize}
+        \item If all observations belong to the same class, the node is perfectly pure and entropy
+            is 0. 
+        \item If the classes are evenly mixed, entropy is large
+    \end{itemize}
+
+    In a classification problem with $C$ classes and dataset $\mathcal{D}$, suppose we evaluate a
+    split of $\mathcal{D}$ into two subsets $\mathcal{D}_l$ and $\mathcal{D}_r$ based on some feature
+    and threshold. \\ 
+
+    \begin{adjustwidth}{1em}{1em}
+        % Question 2b
+        (b) Show that the information gain of a split can be written as
+
+        \begin{align*}
+            \text{IG} = \text{Entropy(parent)} - \sum_{\text{child}}
+            \frac{|R_{\text{child}}|}{|R_\text{parent}|} \text{Entropy(child)}
+        \end{align*}
+
+        Explain why maximising information gain is equivalent to minimizing the weighted post-split
+        entropy. \\ 
+
+        \textbf{Answer:} In decision trees, nodes can be characterised by their split point $s$ and
+        class label $y$. For a given node, the information gain is given by 
+
+        \begin{align*}
+            \text{IG}(y, s) &= H(y) - H(y | s) \\ 
+            \text{IG}(node) &= H(y) - H(y | s) \numberthis
+        \end{align*}
+
+        Where $H(y)$ is the entropy of $y$, and $H(y | s)$ is the conditional entropy measuring the
+        remaining uncertainty in $y$ after observing $s$. Evaluating the $H(y)$ term in (4), it
+        measures the entropy of the entire (remaining) dataset in the node before the split happens.
+        Therefore we can write it as \\ 
+
+        \begin{align*}
+            H(y) = \text{Entropy(node)}
+        \end{align*}
+
+        For the $H(y | s)$ term, we have from the appendex that 
+        
+        \begin{align*}
+            H(y | s) = \sum_{s'}p(s')H(y | s = s')
+        \end{align*}
+
+        Here $s'$ represents all the possible outcomes of the split $s$, i.e. which child node a
+        data point falls into. $p(s')$ then represents the probability of a random observation
+        from the parent lands in that child. This probability can equivalently represented as 
+
+        \begin{align*}
+            p(s') = \frac{|\mathcal{D}_\text{child}|}{|\mathcal{D}_{\text{parent}}|} =
+            \frac{|R_\text{child}|}{|R_\text{parent}|}
+        \end{align*}
+
+        For $H(y | s = s')$ in (4), this is simply just the entropy of class labels in that child.
+        Therefore it can equivalently represented by 
+
+        \begin{align*}
+        H(y | s = s') = \text{Entropy(child)}
+        \end{align*}
+
+        The result follows. To explain why maximising information gain is equiavelent to minimizing
+        the weighted post-split entropy, we evaluate the following
+
+        \begin{align*}
+            \underset{\text{split}}{\arg\max} \text{ IG(split)} = \underset{\text{split}}{\arg\max}
+            \bigg\{\text{Entropy(parent)} - \sum_{\text{child}}
+            \frac{|R_{\text{child}}|}{|R_\text{parent}|}\bigg\}
+        \end{align*}
+
+        Since the entropy of the parent doesn't depend on the split, this evaluates to 
+
+        \begin{align*}
+            \underset{\text{split}}{\arg\max} \text{ IG(split)} 
+                &= \underset{\text{child}}{\arg\max}\bigg\{-\sum_{\text{child}}
+                \frac{|R_\text{child}|}{|R_\text{parent}|}\bigg\} \\ 
+                &= \underset{\text{child}}{\arg\min}\bigg\{\sum_{\text{child}}
+                \frac{|R_\text{child}|}{|R_\text{parent}|}\bigg\}
+        \end{align*}
+        % Question 2c 
+        (c) Consider a binary classification problem with two classes: \textit{Positive} and
+        \textit{Negative}. A node contains 10 observations:
+
+        \begin{align*}
+            \begin{matrix}
+                \text{6 Positive}, & \text{4 Negative}
+            \end{matrix}
+        \end{align*}
+
+        A candidate split produces the following subsets:
+
+        \begin{align*}
+            \begin{matrix}
+                \mathcal{D}_l: \text{(4 positive, 1 negative)}, & \mathcal{D}_r: \text{(2 Positive, 3
+                Negative)}
+            \end{matrix}
+        \end{align*}
+
+        Compute: \\ 
+
+        (i) the entropy of the parent node, 
+
+        (ii) the entropy of each child node
+
+        (iii) the conditional entropy after the split
+
+        (iv) the information gain of the split \\ 
+
+        Interpret the result. \\ 
+
+        \textbf{Answer:} The entropy of the parent node is given by 
+
+        \begin{align*}
+            \text{Entropy(parent)} &= -\sum_{c = 1}^C p_c \log p_c \\ 
+                                   &= -\frac{6}{10} \log\left( \frac{6}{10}\right) 
+                                   - \frac{4}{10} \log \left(\frac{4}{10}\right) \\ 
+                                   &\approx 0.6730
+        \end{align*}
+
+        The entropy of each child node is given by
+
+        \begin{align*}
+            \text{Entropy(left)} &= -\frac{4}{5}\log \left(\frac{4}{5}\right) - 
+                \frac{1}{5} \log \left(\frac{1}{5}\right) \\ 
+                                 &\approx 0.5004
+                                 \\ 
+            \text{Entropy(right)} &= -\frac{2}{5}\log \left(\frac{2}{5}\right) - \frac{3}{5}\log  
+                \left(\frac{3}{5}\right) \\ 
+                                  &\approx 0.6730
+        \end{align*}
+
+        The conditional entropy after the split is given by
+
+        \begin{align*}
+            H(y | s) &= \sum_{\text{child}} \frac{|R_\text{child}|}{|R_\text{parent}|}
+            \text{Entropy(child)} \\ 
+                     &= \frac{5}{10} \cdot 0.5004 + \frac{5}{10} \cdot 0.6730 \\ 
+                     &\approx 0.5867
+        \end{align*}
+
+        The information gain of the split is then given by 
+
+        \begin{align*}
+            \text{IG} &= \text{Entropy(parent)} - \text{Conditional Entropy(children)} \\ 
+                      &= 0.6730 - 0.5867 \\ 
+                      &= 0.0863
+        \end{align*}
+
+        Interpreting this result, not much information was gained by performing the split. That is,
+        we did not reduce a significant amount of uncertainty about the class labels after
+        performing the split.
+    \end{adjustwidth}
+\end{document}
