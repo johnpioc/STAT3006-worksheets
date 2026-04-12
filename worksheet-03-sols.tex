@@ -1,0 +1,359 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{changepage}
+\usepackage[a4paper, margin=0.5in]{geometry}
+
+\setstretch{1.3}
+
+\hbadness=10000
+\setlength{\parindent}{0pt}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\begin{document}
+    \begin{center}
+        \Large \textbf{STAT3006 Worksheet 03}
+    \end{center}
+
+    % Question 1
+    \large \textbf{1. Bayesian Linear Regression with Unknown Variance}
+
+    Consider the linear regression model
+
+    \begin{align*}
+        \begin{matrix}
+            y_i = \mathbf{x}_i^T \boldsymbol{\theta} + \epsilon_i,
+            & \epsilon_i \stackrel{\text{i.i.d.}}{\sim} \mathcal{N}(0, \sigma^2)
+        \end{matrix}
+    \end{align*}
+
+    for observations $i = 1, \dots, n$ where $\mathbf{x}_i \in \mathbb{R}^p$ are the predictors 
+    and $\boldsymbol{\theta} \in \mathbb{R}^p$ are regression coefficients. In matrix form,
+
+    \begin{align*}
+        \begin{matrix}
+            \mathbf{y} = \mathbf{X} \boldsymbol{\theta} + \epsilon ,
+            & \epsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 \mathbf{I}_n)
+        \end{matrix}
+    \end{align*}
+
+    We assume both $\boldsymbol{\theta}$ and $\sigma^2$ are unknown and want to compute the 
+    posterior
+
+    \begin{align*}
+        \mathbb{P}(\boldsymbol{\theta}, \sigma^2 | \mathbf{X}, \mathbf{y})
+    \end{align*}
+
+    \begin{adjustwidth}{1em}{1em}
+        % Question 1a
+        (a) \textbf{Likelihood}. Show that
+
+        \begin{align*}
+            \mathbf{y} | \mathbf{X}, \boldsymbol{\theta}, \sigma^2 \sim \mathcal{N}(\mathbf{X\theta},
+            \sigma^2 \mathbf{I}_n)
+        \end{align*}
+
+        Write the likelihood $\mathbb{P}(\mathbf{y} | \mathbf{X}, \boldsymbol{\theta}, \sigma^2)$. \\
+
+        \textbf{Answer:} Since $\mathbf{y} = \mathbf{X} \boldsymbol{\theta} + \epsilon, \epsilon \sim
+        \mathcal{N}(0, \sigma^2\mathbf{I}_n)$ is just a linear shift of $\epsilon$ by the constant
+        $\mathbf{X}\boldsymbol{\theta}$, we have 
+
+        \begin{align*}
+            \mathbf{y} | \mathbf{X}, \boldsymbol{\theta}, \sigma^2 \sim \mathcal{N}(\mathbf{X}
+            \boldsymbol{\theta} ,\sigma^2 \mathbf{I}_n)
+        \end{align*}
+
+        The likelihood is then given by
+
+        \begin{align*}
+            \mathbb{P}(\mathbf{y} | \mathbf{X} \boldsymbol{\theta}, \sigma^2) = (2\pi\sigma^2)^{-n/
+            2} \exp \left\{\frac{-1}{2\sigma^2}(\mathbf{y} - \mathbf{X}\boldsymbol{\theta})^T
+            (\mathbf{y} - \mathbf{X}\boldsymbol{\theta})\right\}
+        \end{align*}
+
+        % Question 1b
+        (b) \textbf{Prior}. Assume the conjugate prior
+
+        \begin{align*}
+            \begin{matrix}
+                \boldsymbol{\theta} | \sigma^2 \sim \mathcal{N}(\boldsymbol{\mu}_0, \sigma^2
+                \Sigma_0), 
+                & \sigma^2 \sim \text{Inv-Gamma}(\alpha_0, \beta_0)
+            \end{matrix}
+        \end{align*}
+
+        Write the joint prior. \\ 
+
+        \textbf{Answer:} By Bayes Rule,
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta} | \sigma^2) 
+            =& \frac{\mathbb{P}(\boldsymbol{\theta}), \sigma^2}{\mathbb{P}(\sigma^2)} \\ 
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2) 
+            =& \mathbb{P}(\boldsymbol{\theta} | \sigma^2) \mathbb{P}(\sigma^2) \\ 
+            =& (2\pi\sigma^2)^{-p/2}|\Sigma_o|^{-1/2} \exp
+            \left\{\frac{-1}{2\sigma^{2}}(\boldsymbol{\theta} - \boldsymbol{\mu}_0)^T \Sigma_0^{-1}
+            (\boldsymbol{\theta} - \boldsymbol{\mu}_0)\right\} \\ 
+            & \cdot \frac{\beta_0^{\alpha_0}}{\Gamma(\alpha_0)}\sigma^{-2(\alpha_0 + 1)}
+            \exp\left\{\frac{-\beta_0}{\sigma^2}\right\} \\ 
+            =& \beta_0^{\alpha_0}(2\pi)^{-p/2}(\sigma^2)^{-p/2 - \alpha_0 -
+            1}|\Sigma_0|^{-1/2}(\Gamma(\alpha_0))^{-1} \\ 
+            & \cdot \exp\left\{\frac{-1}{2\sigma^2}\Bigg(
+            (\boldsymbol{\theta} - \boldsymbol{\mu}_0)^T \Sigma_0^{-1}(\boldsymbol{\theta} -
+            \boldsymbol{\mu}_0) + 2\beta_0\Bigg)\right\}
+        \end{align*}
+
+         % Question 1c
+        (c) \textbf{Posterior (up to proportionality)}. Using Bayes' rule, write the posterior
+        distribution up to proportionality \\ 
+
+        \textbf{Answer:} As seen in lectures, the posterior is proportional to the likelihood
+        multiplied by the prior. That is,
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2 | \mathbf{X}, \mathbf{y}) 
+            \propto& \mathbb{P}(\mathbf{y}| \mathbf{X}, \boldsymbol{\theta}, \sigma^2) \cdot
+            \mathbb{P}(\boldsymbol{\theta} | \sigma^2) \cdot \mathbb{P}(\sigma^2)
+        \end{align*}
+
+        We can adopt the answer from part (c) and drop the constant terms that don't involve
+        $\boldsymbol{\theta}$ or $\sigma^2$ as we are concerned with proportionality. This gives us
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2 | \mathbf{X,y})
+            \propto& (\sigma^2)^{-n / 2 - p / 2 - \alpha_0 - 1} \\
+                   & \cdot\exp\left\{\frac{-1}{2\sigma^2}\Bigg((\mathbf{y} -
+            \mathbf{X}\boldsymbol{\theta})^T(\mathbf{y} - \mathbf{X}\boldsymbol{\theta}) +
+            (\boldsymbol{\theta} - \boldsymbol{\mu}_0)^T \Sigma_0^{-1} (\boldsymbol{\theta} -
+            \boldsymbol{\mu}_0) + 2\beta_0\Bigg)\right\}
+        \end{align*}
+
+        % Question 1d
+        (d) \textbf{Posterior Distribution}. Show that the posterior has the form 
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2 | \mathbf{X, y}) =
+            \mathbb{P}(\boldsymbol{\theta} | \sigma^2, \mathbf{X, y}) \cdot \mathbb{P}(\sigma^2,
+            \mathbf{X,y})
+        \end{align*}
+
+        where 
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2, \mathbf{X,y}) =
+            \mathcal{N}(\boldsymbol{\mu}_N, \sigma^2 \Sigma_N) \\ 
+            \mathbb{P}(\sigma^2 | \mathbf{X,y}) = \text{Inv-Gamma}(\alpha_N, \beta_N)
+        \end{align*}
+
+        State the updated parameters. \\ 
+        
+        \textbf{Answer:} First we isolate the terms relating to $\boldsymbol{\theta}$ found in part
+        (c), call this $Q(\boldsymbol{\theta})$
+
+        \begin{align*}
+            Q(\boldsymbol{\theta}) 
+            =& (\mathbf{y} - \mathbf{X}\boldsymbol{\theta})^T(y -
+            \mathbf{X}\boldsymbol{\theta}) + (\boldsymbol{\theta} - \boldsymbol{\mu}_0)^T
+            \Sigma_0^{-1}(\boldsymbol{\theta} - \boldsymbol{\mu}_0) \\ 
+            =& \mathbf{y}^T\mathbf{y} - 2\boldsymbol{\theta}^T \mathbf{X}^T \mathbf{y} +
+            \boldsymbol{\theta}^T \mathbf{X}^T \mathbf{X} \boldsymbol{\theta} +
+            \boldsymbol{\theta}^T \Sigma_0^{-1} \boldsymbol{\theta} - 2\boldsymbol{\theta}^T
+            \Sigma_0^{-1}\boldsymbol{\mu}_0 + \boldsymbol{\mu}_0^T \Sigma_0^{-1}\boldsymbol{\mu}_0
+            \\ 
+            =& \boldsymbol{\theta}^T \Bigg(\mathbf{X^TX} + \Sigma_0^{-1}\Bigg)\boldsymbol{\theta} -
+            2\boldsymbol{\theta}^T \Bigg(\mathbf{X^Ty} + \Sigma_0^{-1}\boldsymbol{\mu}_0\Bigg) + R
+            \numberthis
+        \end{align*}
+
+        where $R$ is the irrelevant terms not relating to $\boldsymbol{\theta}$. From (1), we can
+        derive $\Sigma_N^{-1}$ and $\boldsymbol{\mu}_N$ similar to how it was derived in the
+        lectures. That is, 
+
+        \begin{align*}
+            \Sigma_N^{-1} = & \mathbf{X^TX + \Sigma_0^{-1}} \\ 
+            \boldsymbol{\mu}_N =& \Sigma_N(\mathbf{X^Ty} + \Sigma_0^{-1}\boldsymbol{\mu}_0)
+        \end{align*}
+
+        Subbing this result back into $\mathbb{P}(\boldsymbol{\theta})$, only concerning ourselves
+        with terms that are relevant to $\boldsymbol{\theta}$ and $\sigma^2$ we get
+
+        \begin{align*}
+            \mathbb{P}(\boldsymbol{\theta}, \sigma^2 | \mathbf{X,y})
+            =& (\sigma^2)^{-n / 2 - p / 2 - \alpha_0 - 1} \exp\left\{\frac{-1}{2\sigma^2}\Bigg(
+            \boldsymbol{\theta}^T \Sigma_N^{-1} \boldsymbol{\theta} - 2\boldsymbol{\theta}^T
+            \Sigma_N^{-1} \boldsymbol{\mu}_N + R + 2\beta_0\Bigg)\right\} \\ 
+            =& (\sigma)^{- p /2} \exp \left\{\frac{-1}{2\sigma^2}(\boldsymbol{\theta} -
+            \boldsymbol{\mu}_N)^T \Sigma_N^{-1}(\boldsymbol{\theta} - \boldsymbol{\mu}_N)
+            \right\} \numberthis \\ 
+             & \cdot (\sigma^2)^{- (n / 2 + \alpha_0 + 1)} \exp\left\{- \frac{\beta_0 + R / 2}
+            {\sigma^2}\right\} \numberthis
+        \end{align*}
+
+        Here, (2) = $\mathbb{P}(\boldsymbol{\theta} | \sigma^2, \mathbf{X, y}) \propto
+        \mathcal{N}(\boldsymbol{\mu}_N, \sigma^2 \Sigma_N))$ where 
+
+        \begin{align*}
+            \Sigma_N^{-1} = & \mathbf{X^TX + \Sigma_0^{-1}} \\ 
+            \boldsymbol{\mu}_N =& \Sigma_N(\mathbf{X^Ty} + \Sigma_0^{-1}\boldsymbol{\mu}_0)
+        \end{align*}
+
+        and (3) = $\mathbb{P}(\sigma^2, \mathbf{X, y}) \propto \text{Inv-Gamma}(\alpha_N, \beta_N)$
+        where 
+
+        \begin{align*}
+            \alpha_N = n / 2 + \alpha_0 \\ 
+            \beta_N = \beta_0 + R / 2
+        \end{align*}
+    \end{adjustwidth}
+
+    \newpage
+    \textbf{Gradient of Logistic Regression Loss} 
+
+    Consider a binary classification problem with data 
+
+    \begin{align*}
+        \begin{matrix}
+            \mathcal{D} = \{(\mathbf{x}_i, y_i)\}_{i = 1}^n, 
+            & \mathbf{x}_i \in \mathbb{R}^p, 
+            & y_i \in \{0, 1\}
+        \end{matrix}
+    \end{align*}
+
+    Logistic regression models 
+
+    \begin{align*}
+        \begin{matrix}
+            h(\boldsymbol{\theta}) \triangleq \mathbb{P}(y = 1 | \mathbf{x}; \boldsymbol{\theta}) =
+            \sigma(\langle \boldsymbol{\theta}, \mathbf{x}\rangle),
+            & \sigma(z) = \frac{1}{1 + e^{-z}}
+        \end{matrix}
+    \end{align*}
+
+    The negative log-likelihood (cross-entropy loss) is 
+
+    \begin{align*}
+        L(\boldsymbol{\theta}) = -\sum_{i = 1}^n \Bigg[y_i \log h_i(\boldsymbol{\theta}) + (1 -
+        y_i)\log(1 - h_i(\boldsymbol{\theta})\Bigg],
+    \end{align*}
+
+    where 
+
+    \begin{align*}
+        h_i(\boldsymbol{\theta}) = \sigma(\langle \boldsymbol{\theta}, \mathbf{x}_i \rangle)
+    \end{align*}
+
+    \begin{adjustwidth}{1em}{1em}
+        % Question 2a
+        (a) Show that the derivative of the logistic function satisfies 
+
+        \begin{align*}
+            \frac{d}{dz}\sigma(z) = \sigma(z)(1 - \sigma(z))
+        \end{align*}
+
+        \textbf{Answer:} First evaluate LHS 
+
+        \begin{align*}
+            \frac{d}{dz}\sigma(z)
+            &= -1(1 + e^{-z})^{-2} \cdot -e^{-z} \\ 
+            &= \frac{e^{-z}}{(1 + e^{-z})^2}
+        \end{align*}
+
+        Now evaluate RHS
+
+        \begin{align*}
+            \sigma(z)(1 - \sigma(z))
+            &= \frac{1}{1 + e^{-z}}\left(1 - \frac{1}{1 + e^{-z}}\right) \\ 
+            &= \frac{1}{1 + e^{-z}}\left(\frac{1 + e^{-z} - 1}{1 + e^{-z}}\right) \\ 
+            &= \frac{e^{-z}}{(1 + e^{-z})^2} \\ 
+            &= \text{LHS}
+        \end{align*}
+
+        % Question 2b
+        (b) Using the chain rule, derive the gradient of the loss function and show that
+
+        \begin{align*}
+            \nabla L(\boldsymbol{\theta}) = \sum_{i = 1}^n (h_i(\boldsymbol{\theta}) -
+            y_i)\mathbf{x}_i
+        \end{align*}
+
+        \textbf{Answer:} Let's work with a single observation $i$. The cross-entropy loss for a
+        single observation, $l_i(\boldsymbol{\theta})$ is given by 
+
+        \begin{align*}
+            l_i(\boldsymbol{\theta})
+            =& -y_i \log h_i - (1 - y_i)\log(1 - h_i) \\ 
+            \frac{d}{dh_i(\boldsymbol{\theta})}l_i(\boldsymbol{\theta}) 
+            =& \frac{\partial_i}{\partial l_i} \cdot \frac{\partial h_i}{\partial 
+            \boldsymbol{\theta}} \\
+            =& \left(\frac{-y_i}{h_i} - \frac{(1 - y_i)}{(1 - h_i)}\right) \bigg(-1 (1 -
+            e^{-\langle\boldsymbol{\theta}, \mathbf{x}_i\rangle}) -\mathbf{x}_i
+            e^{-\langle\boldsymbol{\theta}, \mathbf{x}_i\rangle}\bigg) \\ 
+                =& \frac{y_i(1 - h_i) - (1 - y_i)h_i}{h_i(1 - h_i)} \cdot h_i(1 - h_i)\mathbf{x}_i\\ 
+                =& -(y_i - h_i)\mathbf{x}_i \\ 
+                =& (h_i - y_i)\mathbf{x}_i
+        \end{align*}
+
+        Summing the cross-entropy loss for all observations we get 
+
+        \begin{align*}
+            \nabla L(\boldsymbol{\theta}) = \sum_{i = 1}^n(h_i - y_i)\mathbf{x}_i
+        \end{align*}
+
+        % Question 2c
+        (c) Write the gradient in matrix form \\ 
+
+        \textbf{Answer:} Looking at the answer from part (d), this can trivially be written in
+        matrix form to 
+
+        \begin{align*}
+            \nabla L(\boldsymbol{\theta}) = \mathbf{X}(\mathbf{h}(\boldsymbol{\theta}) - \mathbf{y})
+        \end{align*}
+    \end{adjustwidth}
+
+    % Question 3
+    \newpage 
+    \textbf{2. Programming Exercise: Poisson Regression}
+
+    The dataset bikes.csv contains daily bike rental counts. The variables are
+
+    \begin{itemize}
+        \item \textbf{temp:} temperature
+        \item \textbf{humidity}: humidity level
+        \item \textbf{windspeed}: wind speed 
+        \item \textbf{count}: number of bike rentals
+    \end{itemize}
+
+    We model the data using the Poisson regression model 
+
+    \begin{align*}
+        \begin{matrix}
+            y_i \sim \text{Pois}(\lambda_i), 
+            & \lambda_i = \exp(\langle \boldsymbol{\theta}, \mathbf{x}_i\rangle)
+        \end{matrix}
+    \end{align*}
+
+    \begin{adjustwidth}{1em}{1em}
+        (a) Load the dataset and plot a histogram of \textbf{count}. Explain why a Poisson model may
+        be appropriate
+
+        (b) Fit a Poisson regression model using the predictors (temp, humidity, windspeed)
+
+        (c) Interpret the coefficient of temp 
+
+        (d) Use the fitted model to predict the expected number of rentals for 
+
+        \begin{align*}
+            \text{temp} = 25,
+            & \text{humidity} = 50,
+            & \text{windspeed} = 10
+        \end{align*}
+
+        (e) Plot predicted counts versus observed counts. \\
+
+        \textbf{Answer: } See w3q2.ipynb
+    \end{adjustwidth}
+\end{document}

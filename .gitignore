@@ -4,3 +4,5 @@
 *.log
 *synctex.gz
 .DS_Store
+
+/code/.venv
