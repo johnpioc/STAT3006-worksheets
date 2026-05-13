@@ -1,0 +1,188 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{changepage}
+\usepackage[a4paper, margin=0.5in]{geometry}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setstretch{1.3}
+
+\hbadness=10000
+\setlength{\parindent}{0pt}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\begin{document}
+    \begin{center}
+        \Large \textbf{STAT3006 Worksheet 03}
+    \end{center}
+
+    \Large \textbf{1. Likelihood-Based Loss Functions}
+    
+    \large Let $p(y | \mathbf{x}; \boldsymbol{\theta})$ be a parametric model for the conditional
+    distribution of $y$ given $\mathbf{x}$. 
+
+    \begin{adjustwidth}{1em}{1em}
+        (a) Define the negative log-likelihood (NLL) loss $\ell(y, \mathbf{x}, 
+        \boldsymbol{\theta})$ \\ 
+
+        \textbf{Answer:}
+
+        \begin{align*}
+            \ell(y, \mathbf{x}, \boldsymbol{\theta}) = -\log \bigg\{p(y | \mathbf{x},
+            \boldsymbol{\theta})\bigg\}
+        \end{align*}
+
+        (b) Given i.i.d data $\{(\mathbf{x}_i, y_i)\}_{i = 1}^n$, write down the emperical risk
+        (average loss) $L(\boldsymbol{\theta})$ \\ 
+
+        \textbf{Answer:}
+
+        \begin{align*}
+            L(\boldsymbol{\theta}) = \frac{1}{n} \sum_{i = 1}^n - \log \bigg\{p(y_i | \mathbf{x}_i ; 
+            \boldsymbol{\theta})\bigg\}
+        \end{align*}
+
+        (c) Explain briefly why specifying a likelihood model is equivalent to specifying a loss
+        function \\ 
+
+        \textbf{Answer:} since the loss function directly involves the likelihood function, choosing
+        the likelihood directly affects the behaviour of the loss function and ultimately affects
+        the model training. \\ 
+
+        (d) Consider the heteroskedastic Guassian model 
+
+        \begin{align*}
+            p(y | \mathbf{x}, \boldsymbol{\theta}) = \mathcal{N}(f(\mathbf{x}; \boldsymbol{\theta}),
+            \exp(h(\mathbf{x}, \boldsymbol{\theta})))
+        \end{align*}
+
+        Dervie the negative log-likelihood loss (up to additive constants independent of
+        $\boldsymbol{\theta}$ \\ 
+
+        \textbf{Answer:} The distribution function of the above Guassian model is given by 
+
+        \begin{align*}
+            p(y | \mathbf{x}, \boldsymbol{\theta}) =
+            (2\pi\exp(h(\mathbf{x};\boldsymbol{\theta})))^{-1/2} \exp \bigg\{\frac{-(\mathbf{x} -
+            f(\mathbf{x}, \boldsymbol{\theta}))^2}{2\exp(h(\mathbf{x}, \boldsymbol{\theta}))}\bigg\}
+        \end{align*}
+
+        Taking the negative log we get 
+
+        \begin{align*}
+            \log p 
+            &= \frac{-(\mathbf{x} - f(\mathbf{x}, \boldsymbol{\theta}))^2}{2\exp(h(\mathbf{x},
+            \boldsymbol{\theta}))} - \frac{1}{2}\log(2\pi) - \frac{1}{2}\log(\exp(h(\mathbf{x},
+            \boldsymbol{\theta}))) \\ 
+            -\log p 
+            &= \frac{(\mathbf{x} - f(\mathbf{x}, \boldsymbol{\theta}))^2}{2\exp(h(\mathbf{x},
+            \boldsymbol{\theta}))} + \frac{1}{2}\log(2\pi) + \frac{1}{2}\log(h(\mathbf{x},
+            \boldsymbol{\theta}))
+        \end{align*}
+
+        (e) Interpret the loss from part (d). In particular, explain how the model treats
+        prediction errors when $\exp(h(\mathbf{x}, \boldsymbol{\theta}))$ is large versus small, and
+        why the additional term $h(\mathbf{x}, \boldsymbol{\theta})$ is necessary. \\ 
+
+        \textbf{Answer:} When $\exp(h(\mathbf{x}, \boldsymbol{\theta}))$ is large, the squared
+        prediction error (first term) is discounted and the loss of an observation is attributed to
+        the model's own uncertainty via the variance (third term). \\
+
+        When $\exp(h(\mathbf{x}, \boldsymbol{\theta}))$ is small, the loss is attributed more
+        towards the squared prediction error, and the closer the prediction is to the true value the
+        smaller the loss. \\ 
+
+        The $h(\mathbf{x}, \boldsymbol{\theta})$ term is necessary because without the third term,
+        we can push the variance up to infinty and it would look like the model is performing very
+        well as the loss is small. The model would actually never be able to learn to predict $y$ 
+        \\ 
+    \end{adjustwidth}
+
+    \Large \textbf{2. Bayes Optimal Predictor (Categorical Likelihood)}
+
+    \large Let $y \in \{1, 2, \dots, K\}$ and suppose a predictor 
+
+    \begin{align*}
+        \mathbf{f}: \mathcal{X} \to \Delta^{K - 1}
+    \end{align*}
+
+    outputs a probability vector 
+
+    \begin{align*}
+        \begin{matrix}
+        \mathbf{f}(\mathbf{x}) = \bigg(f_1(\mathbf{x}), \dots, f_K(\mathbf{x})\bigg), 
+        & f_k(\mathbf{x}) \geq 0, 
+        & \sum_{k = 1}^K f_k(\mathbf{x}) = 1
+        \end{matrix}
+    \end{align*}
+
+    Here, $\Delta^{K -1}$ denotes the probability simplex:
+
+    \begin{align*}
+        \Delta^{K - 1} = \bigg\{\mathbf{t} \in \mathbb{R}^{K} : t_k \geq 0, \sum_{k = 1}^K t_k = 1
+        \bigg\}
+    \end{align*}
+
+    Consider the negative log-likelihood (cross-entropy) loss:
+
+    \begin{align*}
+        \ell(y, \mathbf{f}(\mathbf{x})) = - \sum_{k = 1}^K \mathbf{1}\{y = k\} \log f_k(\mathbf{x})
+    \end{align*}
+
+    For a fixed input $\mathbf{x}$, find the Bayes optimal predictor
+
+    \begin{align*}
+        \mathbf{f}^*(\mathbf{x}) = \argmin_{\mathbf{t} \in \Delta^{K - 1}} \mathbb{E}_{p^*(y |
+        \mathbf{x})}[\ell(y, \mathbf{t})]
+    \end{align*}
+
+    \textbf{Answer:} First we find the conditional risk of the loss function, $\mathbb{E}_{p^*(y |
+    \mathbf{x})}[\ell(y, \mathbf{t})]$,
+
+    \begin{align*}
+        \mathbb{E}_{p^*(y|\mathbf{x})}[\ell(y, \mathbf{t})]
+        &= \mathbb{E}\bigg\{-\sum_{k = 1}^K \mathbf{1}\{y = k\}\log t_k\bigg\} \\ 
+        &= -\sum_{k = 1}^K p^*_k \log t_k
+    \end{align*}
+
+    We can now use the Lagrange Multiplier Method and form the Langrangian 
+
+    \begin{align*}
+        \mathcal{L}(\mathbf{t}, \lambda) = -\sum_{k = 1}^K p^*_k \log t_k + \lambda
+        \left(\sum_{k = 1}^K t_k - 1\right)
+    \end{align*}
+
+    Taking the derivative with respect to $t_k$ we get 
+
+    \begin{align*}
+        \frac{\partial\mathcal{L}}{\partial t_k} 
+        &= -\frac{p^*_k}{t_k} + \lambda
+    \end{align*}
+
+    Letting the L.H.S. equal to zero we get  
+
+    \begin{align*}
+        t_k = \frac{p^*_k}{\lambda}
+    \end{align*}
+
+    Subbing this value of $t_k$ into our constraint we can solve for $\lambda$,
+
+    \begin{align*}
+        \sum_{k = 1}^K \frac{p^*_k}{\lambda} &= 1 \\ 
+        \frac{1}{\lambda}(1) &= 1 \\ 
+        \Rightrarrow \lambda &= 1
+    \end{align*}
+
+    Subbing this value back into $t_k$ we get 
+
+    \begin{align*}
+        t_k = p^*_k
+    \end{align*}
+
+    Therefore the Bayes optimal predictor for the categorical cross-entropy loss is exactly the true
+    conditional distribution
+\end{document}
