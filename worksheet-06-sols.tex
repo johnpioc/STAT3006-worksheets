@@ -1,0 +1,167 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{setspace}
+\usepackage{amssymb}
+\usepackage{changepage}
+\usepackage{graphicx}
+\usepackage[a4paper, margin=0.5in]{geometry}
+
+\DeclareMathOperator*{\argmin}{arg\,min}
+
+\setstretch{1.3}
+
+\hbadness=10000
+\setlength{\parindent}{0pt}
+
+\newcommand\numberthis{\addtocounter{equation}{1}\tag{\theequation}}
+
+\begin{document}
+    \begin{center}
+        \Large \textbf{STAT3006 Worksheet 06}
+    \end{center}
+
+    \Large \textbf{1. Read AdaBoost}
+
+    \large Real AdaBoost is an additive boosting method that constructs a strong classifier by 
+    iteratively
+    adding weak learners with real-valued outputs. Unlike discrete AdaBoost, each weak learner
+    contributes a confidence-weighted prediction. \\ 
+
+    The additive model takes the form 
+
+    \begin{align*}
+        \begin{matrix}
+            h^{(B)}(\mathbf{x}) = \sum_{b = 1}^B \nu f^{(b)}(\mathbf{x}),
+            & f^(b)(\mathbf{x}) \in \mathbb{R}
+        \end{matrix}
+    \end{align*}
+
+    where $\nu > 0$ is a shrinkage parameter. In this exercise, we set $\nu = 1$ so that 
+
+    \begin{align*}
+        h^{(b)}(\mathbf{x}) = \sum_{b = 1}^B f^(b)(\mathbf{x})
+    \end{align*}
+
+    The final classifier is 
+
+    \begin{align*}
+        \hat{y} = \text{sign}\bigg(h^{(b)}(\mathbf{x})\bigg)
+    \end{align*}
+
+    Real AdaBoost is derived by minimising the exponential loss
+
+    \begin{align*}
+        \begin{matrix}
+        L(h) = \sum_{i = 1}^n \exp\bigg(-y_i h(x_i)\bigg),
+        & y_i \in \{-1, +1 \}
+        \end{matrix}
+    \end{align*}
+
+    (a) Show that minimising the exponential loss after adding a weak learner 
+
+    \begin{align*}
+        h^{(b)}(\mathbf{x}) = h^{(b - 1)}(\mathbf{x}) + f^{(b)}(\mathbf{x})
+    \end{align*}
+
+    is equivalent to solving a weighted exponential loss problem: 
+
+    \begin{align*}
+        \min\limits_{j} \sum_{i = 1}^n w^{(b)}_i \exp \bigg(-y_i f(\mathbf{x}_i)\bigg)
+    \end{align*}
+
+    where the weights are 
+
+    \begin{align*}
+        w^{(b)}_i = \exp \bigg(-y_i h^{(b - 1)}(\mathbf{x}_i)\bigg)
+    \end{align*}
+
+    \textbf{Answer:} The loss function is given by
+
+    \begin{align*}
+        L(h) 
+        &= \sum_{i = 1}^n \exp \bigg(-y_i h(\mathbf{x}_i)\bigg) \\ 
+        &= \sum_{i = 1}^n \exp \bigg\{-y_i \bigg(h^{(b - 1)}(\mathbf{x}_i) + f^{(b)}(\mathbf{x}_i)
+            \bigg)\bigg\} \\ 
+        &= \sum_{i = 1}^n \exp \bigg\{-y_i h^{(b - 1)}(\mathbf{x}_i)\bigg\} \cdot \exp \bigg\{-y_i
+            f^{(b)}(\mathbf{x}_i)\bigg\}
+    \end{align*}
+
+    Result follows \\ 
+
+    (b) Assume a weak learner is a tree with Regions $R_1, \dots, R_j$:
+    
+    \begin{align*}
+        \begin{matrix}
+            f^{(b)}(\mathbf{x}) = \gamma_j, 
+            & \text{ if } \mathbf{x} \in R_j
+        \end{matrix}
+    \end{align*}
+
+    Show that the optimal leaf value in Real AdaBoost is 
+
+    \begin{align*}
+        \gamma_j = \frac{1}{2}\log \frac{\sum_{i \in R_j, y_i = 1} w^{(b)}_i}{\sum_{i \in R_j, y_i =
+        -1}w^{(b)}_i}
+    \end{align*}
+
+    \textbf{Answer:} First we define the loss function for a given region $j$, 
+
+    \begin{align*}
+        L_j(h) = \sum_{i = 1}^n w^{(b)}_i \exp \bigg\{-y_i \gamma_j\bigg\}
+    \end{align*}
+
+    We partition $L_j$ into two summations: one where $y_i = -1$ and another one where $y_i = +1$,
+
+    \begin{align*}
+        L_j(h) = \sum_{i \in R_j, y_i = 1} w^{(b)}_i \exp (-\gamma_j) + \sum_{i \in R_j, y_1 = -1}
+        w^{(b)}_i \exp (\gamma_j)
+    \end{align*}
+
+    Differentiating with respect to $\gamma_j$ we get
+
+    \begin{align*}
+        \frac{\partial L_j(h)}{\partial \gamma_j}
+        &= -\sum_{i \in R_j, y_i = 1} w^{(b)}_i \exp(-\gamma_j) + \sum_{i \in R_j, y_i = -1}
+        w^{(b)}_i \exp(\gamma_j)
+    \end{align*}
+
+    Letting L.H.S. = 0 we get 
+
+    \begin{align*}
+        \sum_{i \in R_j, y_i = 1} w^{(b)}_i \exp (-\gamma_j) 
+        =& \sum_{i \in R_j, y_i = -1} w^{(b)}_i \exp (\gamma_j) \\ 
+        \frac{\exp(\gamma_j)}{\exp(\gamma_j)}
+         &= \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
+         \exp(2 \gamma_j)
+         &= \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
+         2\gamma_j
+         &= \log \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
+         \gamma_j 
+         &= \frac{1}{2} \log \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
+    \end{align*}
+
+    (c) In standard boosting, one often writes
+
+    \begin{align*}
+        h^{(b)}(\mathbf{x}) = h^{(b - 1)}(\mathbf{x}) + \alpha^{(b)}f^{(b)}(\mathbf{x}) \numberthis
+    \end{align*}
+
+    Explain where the step size $\alpha^{(b)}$ appears in Real AdaBoost \\
+
+    \textbf{Answer:} In standard AdaBoost, also called discrete AdaBoost, since $y_i \in \{-1,
+    +1,\}$ we have a step size $\alpha^{(b)}$ which transforms the terms in the summation from
+    integer values to real values. \\ 
+
+    In Real AdaBoost, the predictions aren't discrete and involve both the direction as well as
+    confidence of the prediction. That is, $y \in [0, 1]$. Therefore there isn't an explicit
+    $\alpha^{(b)}$ parameter and is otherwise encoded into the predictor function. \\ 
+
+    (d) Explain why Real AdaBoost is more flexible than Discrete AdaBoost \\ 
+
+    \textbf{Answer:} In Discrete AdaBoost, the $\alpha^{(b)}_i$ term is imposed onto all 
+    predictions from that learner. Whereas with Real AdaBoost, this term is encoded straight into
+    the predictor as each prediction has both direction and confidence. We can think of it as every
+    single prediction in every learner has an $\alpha^{(b)}$ term of its own, making Real AdaBoost
+    more flexible.
+\end{document}
