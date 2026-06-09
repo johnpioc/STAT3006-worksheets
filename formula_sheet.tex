@@ -1,0 +1,578 @@
+\documentclass[a4paper,7pt]{article}
+
+% --------------------------------
+% Packages
+% --------------------------------
+\usepackage[a4paper,margin=0.2cm]{geometry}
+\usepackage{multicol}
+\usepackage{amsmath,amssymb,mathtools}
+\usepackage{titlesec}
+\usepackage{microtype}
+
+% --------------------------------
+% Ultra Compact Layout
+% --------------------------------
+\pagestyle{empty}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlength{\columnsep}{0.18cm}
+
+% Display math spacing
+\setlength{\abovedisplayskip}{1pt}
+\setlength{\belowdisplayskip}{1pt}
+\setlength{\abovedisplayshortskip}{0pt}
+\setlength{\belowdisplayshortskip}{0pt}
+
+% Section spacing
+\titlespacing*{\section}{0pt}{1pt}{1pt}
+\titleformat{\section}{\bfseries\fontsize{7}{7}\selectfont}{}{0em}{}
+
+\linespread{0.82}
+
+\begin{document}
+\tiny
+\begin{multicols*}{3}
+
+%% ---------------------------------------------------------------
+\textbf{Vector Norms}\\
+$\ell_p$ Norm: $\|x\|_p=\bigl(\sum^d_{i=1}|x_i|^p\bigr)^{1/p}$\\
+Infinity Norm: $\|x\|_\infty = \max_i |x_i|$\\
+
+\textit{\textbf{Proof $\|x\|_2 \leq \|x\|_1$}}\\
+$\|x\|_1^2=\bigl(\sum_i|x_i|\bigr)^2=\sum_i|x_i|^2+\sum_{i\neq j}|x_i||x_j|$\\
+Cross-product terms $\geq 0$, so $\|x\|_1^2\geq\|x\|_2^2$, hence $\|x\|_1\geq\|x\|_2$.\\
+
+\textit{\textbf{Proof $\|x\|_\infty=\lim_{p\to\infty}\|x\|_p$}}\\
+Let $M=\|x\|_\infty=\max_i|x_i|$. Since $M^p\leq\sum_i|x_i|^p$ (one term), taking $p$-th roots: $M\leq\|x\|_p$. Since $|x_i|\leq M$ for all $i$: $\sum_i|x_i|^p\leq dM^p$, so $\|x\|_p\leq d^{1/p}M$. Combining: $M\leq\|x\|_p\leq d^{1/p}M$. As $p\to\infty$, $d^{1/p}\to 1$; by the Squeeze Theorem $\lim_{p\to\infty}\|x\|_p=M$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Weak and Strong Law of Large Numbers}\\
+$\bar x_n=\frac{1}{n}\sum_{i=1}^n x_i$,\quad $\mathbb{E}[\bar x_n]=\mu$,\quad $\operatorname{Var}(\bar x_n)=\sigma^2/n$\\
+Chebyshev: $P(|Y-\mathbb{E}[Y]|>\epsilon)\leq\operatorname{Var}(Y)/\epsilon^2$\\
+
+\textit{\textbf{Proof of WLLN (via Chebyshev)}}\\
+Apply Chebyshev with $Y=\bar x_n$:\\
+$P(|\bar x_n-\mu|>\epsilon)\leq\dfrac{\operatorname{Var}(\bar x_n)}{\epsilon^2}=\dfrac{\sigma^2}{n\epsilon^2}\xrightarrow{n\to\infty}0$\\
+Hence $\bar x_n\xrightarrow{p}\mu$. \hfill$\square$\\
+
+\textit{\textbf{WLLN vs SLLN}}\\
+WLLN: for fixed $\epsilon>0$, $P(|\bar x_n-\mu|>\epsilon)\to 0$ (convergence in probability at each $n$). SLLN: $P(\lim_{n\to\infty}\bar x_n=\mu)=1$ (almost-sure convergence; the entire trajectory stays close to $\mu$ eventually).\\
+
+%% ---------------------------------------------------------------
+\textbf{High-Dimensional Distance Concentration}\\
+\textit{\textbf{Std-Dev Approximation via Delta Method}}\\
+$S_d=\sum_{j=1}^d z_j$, $\bar z_d=S_d/d$, $D_d=S_d^{1/p}=d^{1/p}\bar z_d^{1/p}$\\
+$g(s)=s^{1/p}$, $g'(s)=\tfrac{1}{p}s^{1/p-1}$. Delta Method:\\
+$\operatorname{Var}(g(\bar z_d))\approx\dfrac{\sigma_z^2}{d}\bigl(g'(\mu_z)\bigr)^2=\dfrac{\sigma_z^2}{dp^2}\mu_z^{2/p-2}$\\
+$\operatorname{Var}(D_d)=d^{2/p}\operatorname{Var}(g(\bar z_d))\approx\dfrac{\sigma_z^2}{p^2}\mu_z^{2/p-2}d^{2/p-1}$\\
+$\operatorname{std}(D_d)\approx\dfrac{\sigma_z}{p}\mu_z^{1/p-1}d^{1/p-1/2}$\\
+
+\textit{\textbf{Concentration Ratio}}\\
+$\mathbb{E}[D_d]\approx(d\mu_z)^{1/p}=d^{1/p}\mu_z^{1/p}$ (LLN).\\
+$\dfrac{\mathbb{E}[D_d]}{\operatorname{std}(D_d)}\approx\dfrac{d^{1/p}\mu_z^{1/p}}{\frac{\sigma_z}{p}\mu_z^{1/p-1}d^{1/p-1/2}}=\dfrac{p\mu_z}{\sigma_z}\sqrt{d}=O(\sqrt{d})$\\
+$\ell_1$ ($p{=}1$) preserves more contrast than $\ell_2$ ($p{=}2$) in high dimensions.\\
+
+%% ---------------------------------------------------------------
+\textbf{Vectorised Distance Computation}\\
+$\|x_i-q\|_2^2=x_i^\top x_i-2x_i^\top q+q^\top q$\\
+$d^2=\operatorname{diag}(XX^\top)-2Xq+\|q\|_2^2\mathbf{1}_n$\\
+\textit{Proof:} $[\operatorname{diag}(XX^\top)]_i=x_i^\top x_i$; $[Xq]_i=x_i^\top q$; third term is scalar broadcast.\\
+Gains: BLAS/LAPACK routines, SIMD parallelism, cache-contiguous memory access.\\
+
+%% ---------------------------------------------------------------
+\textbf{Decision Trees: Approximation and Stability}\\
+
+\textit{\textbf{Diagonal Boundary Approximation}}\\
+CART uses axis-aligned splits $x_j\leq t$. A depth-$d$ tree has $2^d$ leaves; the staircase approximation to the diagonal $x_2=x_1$ has error $\epsilon\sim 2^{-d}$. Solving $2^d\sim 1/\epsilon$ gives $d=O(\log(1/\epsilon))$.\\
+
+\textit{\textbf{Statistical Consistency}}\\
+\textit{Thm (Tree Consistency).} Assume $y=f^*(x)+\varepsilon$ with $\mathbb{E}[\varepsilon|x]=0$, $\operatorname{Var}(\varepsilon|x)=\sigma^2$, $f^*$ bounded and continuous; leaves satisfy $\max_t\operatorname{diam}(R_t^{(n)})\xrightarrow{a.s.}0$ and $\min_t|R_t^{(n)}|\xrightarrow{a.s.}\infty$. Then $\mathbb{E}[(f^{(n)}(x_0)-f^*(x_0))^2]\to 0$.\\
+\textit{Proof.} Let $R^{(n)}=R^{(n)}(x_0)$ be the random leaf containing $x_0$ and $f^{(n)}(x_0)=\frac{1}{|R^{(n)}|}\sum_{i:x_i\in R^{(n)}}y_i$. Condition on $R^{(n)}$:\\
+$\mathbb{E}[(f^{(n)}(x_0)-f^*(x_0))^2]\\=\mathbb{E}\!\left[\operatorname{Var}(f^{(n)}\mid R^{(n)})+\bigl(\mathbb{E}[f^{(n)}\mid R^{(n)}]-f^*(x_0)\bigr)^2\right]$\\
+\textit{Bias:} $\mathbb{E}[f^{(n)}\mid R^{(n)}]=\frac{1}{|R^{(n)}|}\sum_{i:x_i\in R^{(n)}}f^*(x_i)\xrightarrow{a.s.}f^*(x_0)$ as $\operatorname{diam}\to 0$ and $f^*$ continuous. Bounded $f^*$ gives $\mathbb{E}[\text{bias}^2]\to 0$ by DCT.\\
+\textit{Variance:} $\operatorname{Var}(f^{(n)}\mid R^{(n)})=\sigma^2/|R^{(n)}|\xrightarrow{a.s.}0$ since $|R^{(n)}|\to\infty$; DCT gives $\mathbb{E}[\text{var}]\to 0$. \hfill$\square$\\
+\textit{Fixed-depth trees:} leaves do not shrink $\Rightarrow$ bias does not vanish $\Rightarrow$ \emph{not consistent}.\\
+
+\textit{\textbf{Instability:}} Greedy splitting means a small perturbation in one point can alter the root split, cascading to change all downstream splits.\\
+
+%% ---------------------------------------------------------------
+\textbf{Bias--Variance Decomposition}\\
+\textit{Lemma (General).} For random estimator $z$ and fixed target $z_0$:\\
+$\mathbb{E}[(z-z_0)^2]=\underbrace{\operatorname{Var}(z)}_{\text{variance}}+\underbrace{(\mathbb{E}[z]-z_0)^2}_{\text{bias}^2}$\\
+\textit{Proof.} Write $z-z_0=(z-\mathbb{E}[z])+(\mathbb{E}[z]-z_0)$ and square. Cross term: $2(\mathbb{E}[z]-z_0)\,\mathbb{E}[z-\mathbb{E}[z]]=0$. \hfill$\square$\\
+
+\textit{Thm (Regression B--V).} With $y=f^*(x)+\varepsilon$, $\mathbb{E}[\varepsilon|x]=0$, $\operatorname{Var}(\varepsilon|x)=\sigma^2$, $\bar f(x)=\mathbb{E}_D[f(x;D)]$:
+$\bar E^*=\\\underbrace{\mathbb{E}_x[(\bar f(x)-f^*(x))^2]}_{\text{Bias}^2}+\underbrace{\mathbb{E}_x[\mathbb{E}_D[(f(x;D)-\bar f(x))^2]]}_{\text{Variance}}+\underbrace{\sigma^2}_{\text{Irreducible}}$\\
+\textit{Proof.} $\bar E^*=\mathbb{E}_D[\mathbb{E}_{x,\varepsilon}[(f(x;D)-f^*(x)-\varepsilon)^2]]$. Expand over $\varepsilon$: $\mathbb{E}_\varepsilon[(f-f^*-\varepsilon)^2]=(f-f^*)^2+\sigma^2$ (since $\mathbb{E}[\varepsilon|x]=0$). Apply the general Lemma pointwise with $z=f(x;D)$, $z_0=f^*(x)$, then integrate over $x$. \hfill$\square$\\
+
+\textit{\textbf{Conditional Decomposition for Regression Trees}}\\
+Let $h=f^{(n)}(x_0)$, $h^*=f^*(x_0)$, $R=R^{(n)}(x_0)$.\\
+By LTE: $\mathbb{E}[(h-h^*)^2]=\mathbb{E}[\mathbb{E}[(h-h^*)^2\mid R]]$\\
+Apply Lemma conditional on $R$:\\
+$\mathbb{E}[(h-h^*)^2]=\mathbb{E}\!\left[\operatorname{Var}(h\mid R)+(\mathbb{E}[h\mid R]-h^*)^2\right]$\\
+
+%% ---------------------------------------------------------------
+\textbf{Entropy and Information Gain}\\
+$H(y)=-\sum_c p_c\ln p_c$,\quad $H(y|s)=\tfrac{|D_l|}{|D|}H(D_l)+\tfrac{|D_r|}{|D|}H(D_r)$\\
+$\mathrm{IG}=H(y)-H(y|s)$\\
+\textit{Example:} Parent $(6P,4N)$, Left $(4P,1N)$, Right $(2P,3N)$:\\
+$H_\text{par}\approx0.673$, $H(D_l)\approx0.500$, $H(D_r)\approx0.673$\\
+$H(y|s)=0.5(0.500)+0.5(0.673)=0.587$, $\mathrm{IG}=0.086>0$\\
+
+\textit{\textbf{Gini Index (Probabilistic Interpretation)}}\\
+$\mathrm{cost}(R_t)=1-\sum_c(\pi_t^c)^2=P(\text{two i.i.d.\ draws from }R_t\text{ differ})$.\\
+\textit{Proof.} $P(\text{same class})=\sum_{c=1}^C P(y_1=c)P(y_2=c)=\sum_c(\pi_t^c)^2$. Hence $P(\text{different})=1-\sum_c(\pi_t^c)^2$. \hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Cost-Complexity Pruning}\\
+Objective: $L_\alpha(T)=R_n(T)+\alpha|T|$, \\ where $R_n(T)=\frac{1}{n}\sum_i\mathbf{1}\{\hat f_T(x_i)\neq y_i\}$.\\
+
+\textit{\textbf{Proof $R_n(T)=0$ for fully-grown tree}}\\
+Each leaf contains exactly one point $(x_i,y_i)$, so $\hat f_T(x_i)=y_i$ for all $i$, giving $R_n(T)=0$. This corresponds to memorisation: high variance, poor generalisation.\\
+
+\textit{\textbf{Proof $\alpha\to\infty$ yields single-leaf tree}}\\
+For $|T|>1$: $L_\alpha(T)\geq\alpha|T|\geq 2\alpha$. For $T_\mathrm{root}$: $L_\alpha(T_\mathrm{root})=R_n(T_\mathrm{root})+\alpha$. As $\alpha\to\infty$ the penalty $\alpha|T|$ dominates, so the minimiser has $|T|=1$.\\
+
+\textit{\textbf{Bias--Variance via $\alpha$:}} large $\alpha\Rightarrow$ smaller tree $\Rightarrow$ variance$\downarrow$, bias$\uparrow$; optimal generalisation at intermediate $\alpha$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Bayesian Linear Regression}\\
+Model: $y=X\theta+\varepsilon$, $\varepsilon\sim\mathcal{N}(0,\sigma^2 I_n)$. Prior: $\theta\sim\mathcal{N}(\mu_0,\Sigma_0)$.\\
+Posterior: $p(\theta|X,y)=\mathcal{N}(\mu_N,\Sigma_N)$ where\\
+$\Sigma_N^{-1}=\dfrac{1}{\sigma^2}X^\top X+\Sigma_0^{-1}$,\quad $\mu_N=\Sigma_N\!\left(\dfrac{1}{\sigma^2}X^\top y+\Sigma_0^{-1}\mu_0\right)$\\
+\textit{Proof (sketch).} Posterior $\propto$ likelihood $\times$ prior. Both are Gaussian, so the log-posterior is a quadratic in $\theta$. Expand and collect: quadratic term gives $\Sigma_N^{-1}$; linear term gives $\Sigma_N^{-1}\mu_N$. Complete the square to read off $\mathcal{N}(\mu_N,\Sigma_N)$. \hfill$\square$\\
+
+\textit{\textbf{Regime $\tau^2\to\infty$ (flat prior), $\Sigma_0=\tau^2 I$:}}\\
+$\Sigma_N^{-1}\to\sigma^{-2}X^\top X$, $\mu_N\to(X^\top X)^{-1}X^\top y=\hat\theta_\mathrm{OLS}$\\
+
+\textit{\textbf{Regime $\tau^2\to 0$ (infinite precision prior):}}\\
+$\Sigma_N^{-1}\to\infty\cdot I_p\Rightarrow\Sigma_N\to 0$, $\mu_N\to 0$; prior dominates, posterior collapses to $\theta=0$.\\
+
+\textit{\textbf{MAP $=$ Ridge}} With $\Sigma_0=\frac{\sigma^2}{n\lambda}I$:\\
+$\log p(\theta|X,y)\propto-\tfrac{1}{2\sigma^2}(\|y-X\theta\|_2^2+n\lambda\|\theta\|_2^2)$\\
+$\Rightarrow\hat\theta_\mathrm{MAP}=\arg\min_\theta\tfrac{1}{n}\|y-X\theta\|_2^2+\lambda\|\theta\|_2^2=\hat\theta_\mathrm{ridge}$\hfill$\square$\\
+
+\textit{\textbf{Posterior Predictive}} For new $x_*$ with $y_*=x_*^\top\theta+\varepsilon_*$, $\varepsilon_*\sim\mathcal{N}(0,\sigma^2)$:\\
+$y_*|x_*,X,y\sim\mathcal{N}(\langle x_*,\mu_N\rangle,\;\underbrace{\sigma^2}_{\text{aleatoric}}+\underbrace{\langle x_*,\Sigma_N x_*\rangle}_{\text{epistemic}})$\\
+\textit{Proof.} $x_*^\top\theta|X,y\sim\mathcal{N}(x_*^\top\mu_N,x_*^\top\Sigma_N x_*)$ by affine transform. Add independent $\varepsilon_*$; variances sum. \hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Bayesian Linear Regression (Unknown Variance)}\\
+Prior: $\theta|\sigma^2\sim\mathcal{N}(\mu_0,\sigma^2\Sigma_0)$, $\sigma^2\sim\mathrm{Inv\text{-}Gamma}(\alpha_0,\beta_0)$.\\
+Posterior: $\theta|\sigma^2,X,y\sim\mathcal{N}(\mu_N,\sigma^2\Sigma_N)$, $\sigma^2|X,y\sim\mathrm{Inv\text{-}Gamma}(\alpha_N,\beta_N)$\\
+$\Sigma_N^{-1}=X^\top X+\Sigma_0^{-1}$,\quad $\mu_N=\Sigma_N(X^\top y+\Sigma_0^{-1}\mu_0)$\\
+$\alpha_N=\alpha_0+n/2$\\
+$\beta_N=\beta_0+\tfrac{1}{2}(y^\top y+\mu_0^\top\Sigma_0^{-1}\mu_0-\mu_N^\top\Sigma_N^{-1}\mu_N)$\\
+
+%% ---------------------------------------------------------------
+\textbf{Logistic Regression}\\
+
+\textit{\textbf{Logistic Loss from MLE}}\\
+Model: $p(y=1|x;\theta)=\sigma(\theta^\top x)$, $y\in\{-1,+1\}$. Independence gives:\\
+$p(y|x;\theta)=\sigma(y\theta^\top x)=\dfrac{e^{y\theta^\top x}}{1+e^{y\theta^\top x}}$\\
+$\Rightarrow\ell=-\ln p(y|x;\theta)=\ln(1+e^{-y\theta^\top x})$\\
+Empirical risk: $L(\theta)=\frac{1}{n}\sum_i\ln(1+e^{-y_i\theta^\top x_i})$\hfill$\square$\\
+
+\textit{\textbf{Derivative of Sigmoid}}\\
+$\sigma(z)=(1+e^{-z})^{-1}$,\quad $\sigma'(z)=\sigma(z)(1-\sigma(z))$\\
+
+\textit{\textbf{Gradient of Logistic Loss}}\\
+$\nabla_\theta L(\theta)=\frac{1}{n}\sum_i(h_i(\theta)-y_i)x_i=\frac{1}{n}X^\top(h(\theta)-y)$\\
+\textit{Proof.} Let $z_i=\theta^\top x_i$, $h_i=\sigma(z_i)$.\\
+$\nabla_\theta L=-\frac{1}{n}\sum_i\!\left[\frac{y_i}{h_i}\cdot h_i(1-h_i)-\frac{1-y_i}{1-h_i}\cdot h_i(1-h_i)\right]x_i$\\
+$=-\frac{1}{n}\sum_i[y_i(1-h_i)-(1-y_i)h_i]x_i=\frac{1}{n}\sum_i(h_i-y_i)x_i$\hfill$\square$\\
+
+\textit{\textbf{Linear Decision Boundary}}\\
+Predict $1$ iff $\sigma(\theta^\top x)\geq\tfrac{1}{2}$ iff $\theta^\top x\geq 0$; boundary is hyperplane $\theta^\top x=0$. \hfill$\square$\\
+
+\textit{\textbf{Softmax (Multiclass)}}\\
+Binary: $p(y=1|x)=\frac{e^{\theta_1^\top x}}{e^{\theta_1^\top x}+e^{\theta_2^\top x}}$. \\
+Generalises to $p(y=c|x;\theta)=\frac{e^{\theta_c^\top x}}{\sum_{c'=1}^C e^{\theta_{c'}^\top x}}$.\hfill$\square$\\
+
+\textit{\textbf{Cross-Entropy Decomposition}}\\
+$H(q,p)=-\sum_c q(c)\ln p(c)=\underbrace{-\sum_c q(c)\ln q(c)}_{H(q)}+\underbrace{\sum_c q(c)\ln\frac{q(c)}{p(c)}}_{\mathrm{KL}(q\|p)\geq 0}$\\
+Hence minimising cross-entropy $\equiv$ minimising $\mathrm{KL}(q\|p)$; equality iff $p=q$. \hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Perfect Separation Paradox}\\
+Loss: $L(\theta)=\frac{1}{n}\sum_i\ln(1+e^{-y_i\langle\theta,x_i\rangle})$\\
+If $\exists\theta^*$: $y_i\langle\theta^*,x_i\rangle>0\ \forall i$, scale $\theta=\alpha\theta^*$:\\
+$L(\alpha\theta^*)\to 0$ as $\alpha\to\infty$, but $L(\theta)>0\ \forall\theta\in\mathbb{R}^d$, so inf is unattained $\Rightarrow$ MLE does not exist.\\
+\textit{Fix: $\ell_2$ regularisation.} $J(\theta)=L(\theta)+\lambda\|\theta\|_2^2$. As $\|\theta\|\to\infty$, $\lambda\|\theta\|_2^2\to\infty$, so $J$ is coercive and a finite minimiser exists.\\
+
+%% ---------------------------------------------------------------
+\textbf{Loss Functions: Decision-Theoretic Foundations}\\
+
+\textit{\textbf{Bayes-Optimal Predictor (Pointwise)}}\\
+$f^*(x)\in\arg\min_{t\in\mathbb{R}}\mathbb{E}_{p^*(y|x)}[\ell(y,t)]$\\
+\textit{Proof.} By tower rule: $\mathbb{E}_{p^*(x,y)}[\ell(y,f(x))]=\mathbb{E}_x[\mathbb{E}_{y|x}[\ell(y,f(x))]]$. Minimise inner expectation pointwise at each $x$. \hfill$\square$\\
+
+\textit{\textbf{Squared Loss $\to$ Conditional Mean}}\\
+$\ell(y,t)=(y-t)^2$: $\frac{\partial}{\partial t}\mathbb{E}[(y-t)^2|x]=-2\mathbb{E}[y|x]+2t=0\Rightarrow t^*=\mathbb{E}[y|x]$\hfill$\square$\\
+
+\textit{\textbf{Absolute Loss $\to$ Conditional Median}}\\
+$h(t)=\mathbb{E}[|y-t||x]=\int_{-\infty}^t(t-y)p(y|x)\,dy+\int_t^\infty(y-t)p(y|x)\,dy$\\
+Leibniz rule: $h'(t)=P(y\leq t|x)-P(y>t|x)=2P(y\leq t|x)-1$\\
+$h'(t^*)=0\Rightarrow P(y\leq t^*|x)=\tfrac{1}{2}\Rightarrow t^*=\operatorname{median}(y|x)$\hfill$\square$\\
+
+\textit{\textbf{NLL is Proper}}\\
+$\mathbb{E}_{p^*}[-\ln p_f(y|x)]=H(p^*)+\mathrm{KL}(p^*\|p_f)\geq H(p^*)$, with equality iff $p_f=p^*$.\\
+\textit{Proof.} Add/subtract $\ln p^*$ inside the expectation. \hfill$\square$\\
+
+\textit{\textbf{0--1 Loss: Bayes Classifier and Impropriety}}\\
+$f^*(x)=\operatorname{sign}(\eta(x)-\tfrac{1}{2})$; error $=\min\{\eta(x),1-\eta(x)\}$. Not proper: $f^*$ depends only on the sign of $\eta-\tfrac{1}{2}$, so distinct $\eta$ values map to the same prediction and $\eta$ cannot be recovered.\\
+
+\textit{\textbf{Cross-Entropy Strictly Proper}}\\
+Risk $\eta(-\ln t)+(1-\eta)(-\ln(1-t))$; FOC: $-\eta/t+(1-\eta)/(1-t)=0\Rightarrow t^*=\eta(x)$. Strictly convex on $(0,1)$ $\Rightarrow$ unique minimiser recovers the full conditional distribution. \hfill$\square$\\
+
+\textit{\textbf{Logistic Loss Strictly Proper}}\\
+$\phi(t)=\eta\ln(1+e^{-t})+(1-\eta)\ln(1+e^t)$; $\phi'(t)=0\Rightarrow e^t=\eta/(1-\eta)\Rightarrow f^*(x)=\ln\frac{\eta(x)}{1-\eta(x)}$ (log-odds). Log-odds map invertible in $\eta$ $\Rightarrow$ strictly proper. \hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Likelihood-Based Loss Functions}\\
+$\ell(y,x;\theta)=-\ln p(y|x;\theta)$. Gaussian $\Rightarrow$ squared loss; Laplace $\Rightarrow$ absolute loss.\\
+
+\textit{\textbf{Gaussian MLE $=$ Least Squares}}\\
+$p(y|X;\theta)=\prod_i\mathcal{N}(y_i;\theta^\top x_i,\sigma^2)$. Log-likelihood:\\
+$\ln p=-\frac{n}{2}\ln(2\pi\sigma^2)-\frac{1}{2\sigma^2}\sum_i(y_i-\theta^\top x_i)^2$\\
+Maximising over $\theta$ $\equiv$ minimising $\sum_i(y_i-\theta^\top x_i)^2$.\hfill$\square$\\
+
+\textit{\textbf{Poisson Regression NLL}} $y_i|x_i\sim\mathrm{Pois}(\lambda_i)$, $\lambda_i=e^{\theta^\top x_i}$:\\
+NLL $=\sum_i(e^{\theta^\top x_i}-y_i\theta^\top x_i)+\mathrm{const}$\\
+
+\textit{\textbf{Heteroskedastic Gaussian}}\\
+$y|x;\theta\sim\mathcal{N}(f(x;\theta),\exp(h(x;\theta)))$:\\
+$\ell\propto\tfrac{1}{2}h(x;\theta)+\dfrac{(y-f(x;\theta))^2}{2\exp(h(x;\theta))}$\\
+High variance: error down-weighted. $\frac{1}{2}h$ term prevents $h\to\infty$ trivially.\\
+
+%% ---------------------------------------------------------------
+\textbf{Normal Equations and Ridge}\\
+OLS: $\nabla_\theta\tfrac{1}{2}\|X\theta-y\|_2^2=X^\top(X\theta-y)=0\Rightarrow X^\top X\hat\theta=X^\top y$\\
+If $X^\top X$ invertible: $\hat\theta=(X^\top X)^{-1}X^\top y$.\\
+Ridge: $\nabla(\tfrac{1}{n}\|X\theta-y\|_2^2+\lambda\|\theta\|_2^2)=0\Rightarrow(X^\top X+n\lambda I)\hat\theta=X^\top y$\\
+$\lambda>0$ makes $X^\top X+n\lambda I$ PD (hence invertible): $\hat\theta=(X^\top X+n\lambda I)^{-1}X^\top y$.\hfill$\square$\\
+
+\textbf{Ridge Bias and Variance}\\
+$S_\lambda=(X^\top X+\lambda I)^{-1}X^\top X$. $\hat\theta_\lambda=S_\lambda\theta^*+(X^\top X+\lambda I)^{-1}X^\top\varepsilon$.\\
+$\mathbb{E}[\hat\theta_\lambda]=S_\lambda\theta^*$; $\mathrm{Bias}(\hat\theta_\lambda)=(S_\lambda-I)\theta^*$ (nonzero for $\lambda>0$).\\
+$\mathrm{Cov}(\hat\theta_\lambda)=\sigma^2(X^\top X+\lambda I)^{-1}X^\top X(X^\top X+\lambda I)^{-1}$ (shrinks as $\lambda\uparrow$).\hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Multivariate Normal: Key Properties}\\
+
+\textit{\textbf{Zero Cov $\Rightarrow$ Independence (Gaussian case only)}}\\
+$\operatorname{Cov}(x_1,x_2)=0\Rightarrow\Sigma=\operatorname{diag}(\sigma_1^2,\sigma_2^2)\Rightarrow(x-\mu)^\top\Sigma^{-1}(x-\mu)$ decouples $\Rightarrow p(x_1,x_2)=p(x_1)p(x_2)$. Non-Gaussian counterexample: $X\sim\mathrm{Unif}\{-1,0,1\}$, $Y=X^2$: $\operatorname{Cov}(X,Y)=0$ but $Y$ determined by $X$.\\
+
+\textit{\textbf{Second Moment Identity:}} $\mathbb{E}[(x^\top v)^2]=v^\top\mathbb{E}[xx^\top]v=v^\top\Sigma v$\\
+
+\textit{\textbf{Rotational Invariance:}} $x\sim\mathcal{N}(0,I_p)$, $Q$ orthogonal $\Rightarrow Qx\sim\mathcal{N}(0,I_p)$. Density $\propto e^{-\|x\|_2^2/2}$ depends only on $\|x\|_2$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Overparameterisation and Implicit Regularisation}\\
+$p>n$: $X\in\mathbb{R}^{n\times p}$ has full row rank $n$; $\dim(\mathrm{Null}(X))=p-n>0\Rightarrow\infty$ many interpolating solutions.\\
+
+\textit{\textbf{Minimum-Norm Solution:}} $\theta^\dagger=X^\top(XX^\top)^{-1}y$ (smallest $\|\theta\|_2$ among all $X\theta=y$). Selects smoothest interpolator; controls effective complexity like ridge.\\
+
+\textit{\textbf{GD Implicit Regularisation:}} Update $\theta_{t+1}=\theta_t-\eta X^\top(X\theta_t-y)$, $\theta_0=0$. Every update lies in $\mathrm{Range}(X^\top)$, so $\theta_t\in\mathrm{Range}(X^\top)\ \forall t$. The unique $\mathrm{Range}(X^\top)$ solution to $X\theta=y$ is $\theta^\dagger$, so $\theta_t\to\theta^\dagger$ with appropriate $\eta$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Implicit Bias and Double Descent (Logistic)}\\
+
+\textit{\textbf{Maximum Margin $\Leftrightarrow$ Hard-SVM}}\\
+Margin: $\gamma(\theta)=\min_i y_i x_i^\top\theta$, $\|\theta\|_2=1$. Let $w=\theta/\gamma$: $y_i x_i^\top w\geq 1$ and $\|w\|_2=1/\gamma$. Hence $\max\gamma(\theta)\Leftrightarrow\min\|w\|_2^2$ s.t. $y_i x_i^\top w\geq 1$.\hfill$\square$\\
+
+\textit{\textbf{Robustness of Large Margin:}} For perturbation $\|z\|_2\leq\varepsilon$: by Cauchy--Schwarz, $(x_i+z)^\top\theta\geq\gamma(\theta)-\varepsilon\|\theta\|_2$. Classification unchanged if $\gamma>\varepsilon\|\theta\|_2$.\\
+
+\textit{\textbf{GD on Logistic (Separable):}} $\|\theta_t\|\to\infty$, $\theta_t/\|\theta_t\|\to\theta_\mathrm{MM}$. Near $p\approx n$ test error peaks; for $p\gg n$ implicit bias toward max-margin (low-complexity) solution causes second descent.\\
+
+%% ---------------------------------------------------------------
+\textbf{Bayes Optimal Predictor (Categorical)}\\
+$h(t)=\mathbb{E}[\ell(y,t)]=-\sum_{k=1}^K p_k\ln t_k$, $\sum_k t_k=1$.\\
+Lagrangian: $\mathcal{L}=-\sum_k p_k\ln t_k+\lambda(\sum_k t_k-1)$.\\
+FOC: $\partial\mathcal{L}/\partial t_k=-p_k/t_k+\lambda=0\Rightarrow t_k=p_k/\lambda$.\\
+Constraint: $\sum_k p_k/\lambda=1\Rightarrow\lambda=1\Rightarrow t_k^*=p_k$.\\
+Hence $f_k^*(x)=P(y=k|x)$: cross-entropy minimised by the true conditional distribution. \hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Real AdaBoost}\\
+Additive model: $h^{(b)}=h^{(b-1)}+f^{(b)}$. Weights $w_i^{(b)}=\exp(-y_i h^{(b-1)}(x_i))$.\\
+$L(f^{(b)})=\sum_i w_i^{(b)}\exp(-y_i f^{(b)}(x_i))$\\
+
+\textit{\textbf{Optimal Leaf Values:}}\\ For region $R_j$, $W_j^\pm=\sum_{i\in R_j,y_i=\pm1}w_i^{(b)}$:\\
+$L_j(\gamma_j)=W_j^+e^{-\gamma_j}+W_j^-e^{\gamma_j}$; \\
+$dL_j/d\gamma_j=0\Rightarrow e^{2\gamma_j}=W_j^+/W_j^-$, $\gamma_j=\tfrac{1}{2}\ln(W_j^+/W_j^-)$\\
+Real AdaBoost assigns per-region $\gamma_j\in\mathbb{R}$ vs discrete AdaBoost's single global $\alpha^{(b)}\in\{-1,+1\}$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Kernel Ridge Regression (KRR)}\\
+
+\textit{\textbf{Kernelising Ridge via Push-Through}}\\
+Feature-space ridge prediction: $\hat y(x_*)=\phi(x_*)^\top(\Phi^\top\Phi+n\lambda I_p)^{-1}\Phi^\top y$\\
+Push-through identity: $(A^\top A+\lambda I)^{-1}A^\top=A^\top(AA^\top+\lambda I)^{-1}$. With $A=\Phi$:\\
+$\hat y(x_*)=\phi(x_*)^\top\Phi^\top(\Phi\Phi^\top+n\lambda I_n)^{-1}y=k_*^\top(K+n\lambda I)^{-1}y$\\
+where $K=\Phi\Phi^\top$, $[k_*]_i=k(x_i,x_*)$. Only an $n\times n$ inverse needed.\hfill$\square$\\
+
+\textit{\textbf{Representer Theorem (Finite-Dim)}}\\
+Any minimiser of $\min_\theta\frac{1}{n}\sum_i\ell(y_i,\phi(x_i)^\top\theta)+\lambda\|\theta\|_2^2$ has form $\hat\theta=\sum_i\alpha_i\phi(x_i)$.\\
+\textit{Proof.} Decompose $\theta=\theta_\|+\theta_\perp$ with $\theta_\|\in\mathrm{span}\{\phi(x_i)\}$ and $\theta_\perp\perp\phi(x_i)\ \forall i$. Loss depends only on $\theta_\|$ (since $\phi(x_i)^\top\theta=\phi(x_i)^\top\theta_\|$). By Pythagoras: $\|\theta\|_2^2=\|\theta_\|\|_2^2+\|\theta_\perp\|_2^2\geq\|\theta_\|\|_2^2$. So $\theta_\perp=0$ at the optimum.\hfill$\square$\\
+
+\textit{\textbf{Representer Theorem (RKHS)}}\\
+\textit{Proof.} Minimiser of $\min_{f\in\mathcal{H}_k}\frac{1}{n}\sum_i\ell(y_i,f(x_i))+\lambda\|f\|_{\mathcal{H}_k}^2$ is \\$\hat f(\cdot)=\sum_i\alpha_i k(x_i,\cdot)$, with $\|\hat f\|_{\mathcal{H}_k}^2=\alpha^\top K\alpha$.
+Reproducing property $f(x)=\langle f,k(x,\cdot)\rangle_{\mathcal{H}_k}$ plays the role of $\phi(x)^\top\theta$; same orthogonal-decomposition argument as finite-dim case.\hfill$\square$\\
+
+\textit{\textbf{PSD Kernel Examples}}\\
+Polynomial: $k(x,x')=(1+xx')^2=\phi(x)^\top\phi(x')$ with $\phi(x)=(1,\sqrt{2}x,x^2)^\top$. $v^\top Kv=\sum_i v_i(1+2x_ix_j+x_i^2x_j^2)\geq 0$.\\
+Exponential: $k(x,x')=e^{xx'}=\sum_{m=0}^\infty\frac{x^m}{\sqrt{m!}}\frac{x'^m}{\sqrt{m!}}$. $v^\top Kv=\sum_{m=0}^\infty\frac{1}{m!}(\sum_i v_i x_i^m)^2\geq 0$.\hfill$\square$\\
+
+\textit{\textbf{KRR Bias and Variance}}\\
+Smoother: $\hat f=Sy$, $S=K(K+n\lambda I)^{-1}$ (symmetric).\\
+$\mathbb{E}[\hat f]=Sf^*$; $\mathrm{Bias}=(S-I)f^*=-n\lambda(K+n\lambda I)^{-1}f^*$.\\
+$\mathrm{Cov}(\hat f)=\sigma^2 S^2$; $\mathbb{E}\|\hat f-f^*\|_2^2=\|(S-I)f^*\|_2^2+\sigma^2\mathrm{tr}(S^2)$.\\
+Spectral view: $K=U\Lambda U^\top\Rightarrow S=\sum_i\frac{\mu_i}{\mu_i+n\lambda}u_i u_i^\top$; large $\mu_i$ (smooth modes) preserved, small $\mu_i$ (noisy) suppressed.\hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Support Vector Regression (SVR)}\\
+$\ell_\epsilon(r)=\max(0,|r|-\epsilon)$; as $\epsilon\to 0$, reduces to KLAD ($|r|$).\\
+Support vectors: points with $|y_i-\theta^\top\phi(x_i)|\geq\epsilon$ (outside the tube).\\
+\textit{\textbf{Robustness:}} Influence function $\psi(r)\in\partial\ell(r)$: KRR $\psi=2r$ (unbounded); KLAD/SVR $|\psi|\leq 1$ (bounded) $\Rightarrow$ robust to outliers.\\
+
+\textit{\textbf{SVR Dual}} Primal $\min_{\theta,\xi}\frac{1}{n}\sum_i(\xi_i^++\xi_i^-)+\lambda\|\theta\|_2^2$ s.t.\ slack constraints. Stationarity in $\theta$: $\hat\theta=\frac{1}{2\lambda}\sum_i\alpha_i\phi(x_i)$, $\alpha_i=\alpha_i^+-\alpha_i^-$. Dual (after rescaling):\\
+$\min_\alpha\frac{1}{2}\alpha^\top K\alpha-\alpha^\top y+\epsilon\|\alpha\|_1$ s.t. $|\alpha_i|\leq\frac{1}{2\lambda n}$\hfill$\square$\\
+
+\textit{\textbf{SVC (Soft-Margin SVM) Dual}} $\theta=\frac{1}{2\lambda}\sum_i\alpha_i y_i\phi(x_i)$. Dual:\\
+$\min_\alpha\frac{1}{2}\alpha^\top(YKY)\alpha-\mathbf{1}^\top\alpha$ s.t. $0\leq\alpha_i\leq\frac{1}{2\lambda n}$, $Y=\operatorname{diag}(y)$\hfill$\square$\\
+
+\textit{\textbf{Weak Duality}} For $\min_\omega f(\omega)$ s.t. $g_i(\omega)\leq 0$, dual $g(\alpha)=\min_\omega L(\omega,\alpha)$:\\
+$\max_{\alpha\geq 0}g(\alpha)\leq\min_{g_i\leq 0}f(\omega)$\\
+\textit{Proof.} Fix $\alpha\geq 0$ and feasible $\omega$: $\sum_i\alpha_i g_i(\omega)\leq 0\Rightarrow L(\omega,\alpha)\leq f(\omega)\Rightarrow g(\alpha)\leq f(\omega)$ for all feasible $\omega$.\hfill$\square$\\
+
+%% ---------------------------------------------------------------
+\textbf{Gaussian Processes}\\
+
+\textit{\textbf{Construction and Existence}} A GP $f\sim\mathcal{GP}(\mu,\kappa)$ exists iff $\kappa$ is PSD (Kolmogorov extension theorem guarantees consistent marginals). Linear model $f(x)=\phi(x)^\top\theta$, $\theta\sim\mathcal{N}(\mu_\theta,I)$ is a GP with $\kappa(x,x')=\phi(x)^\top\phi(x')$.\\
+
+\textit{\textbf{GP Regression Posterior}}\\
+Prior: $f\sim\mathcal{N}(\mu,K)$, noise: $\varepsilon\sim\mathcal{N}(0,\sigma^2 I)$, $y=f+\varepsilon\sim\mathcal{N}(\mu,K+\sigma^2 I)$.\\
+Joint: $\begin{bmatrix}y\\f_*\end{bmatrix}\sim\mathcal{N}\!\left(\begin{bmatrix}\mu\\\mu_*\end{bmatrix},\begin{bmatrix}K+\sigma^2 I&k_*\\k_*^\top&\kappa_{**}\end{bmatrix}\right)$\\
+Gaussian conditioning ($b|a\sim\mathcal{N}(\mu_b+C^\top A^{-1}(a-\mu_a),B-C^\top A^{-1}C)$):\\
+$f_*|y\sim\mathcal{N}(\mu_n(x_*),\sigma_n^2(x_*))$\\
+$\mu_n(x_*)=\mu_*+k_*^\top(K+\sigma^2 I)^{-1}(y-\mu)$\\
+$\sigma_n^2(x_*)=\kappa_{**}-k_*^\top(K+\sigma^2 I)^{-1}k_*$\hfill$\square$\\
+
+\textit{\textbf{Posterior Variance Monotone in Data}}\\
+$\sigma_n^2(x)=\kappa(x,x)-k^\top(K+\sigma^2 I)^{-1}k$. Enlarging the dataset grows $k^\top(K+\sigma^2 I)^{-1}k$ (extra orthogonal directions of explanation), so $\sigma_n^2(x)$ cannot increase.\hfill$\square$\\
+
+\textit{\textbf{Log Marginal Likelihood:}} $\ln p(y)=-\frac{1}{2}(y-\mu)^\top(K+\sigma^2 I)^{-1}(y-\mu)-\frac{1}{2}\ln|K+\sigma^2 I|-\frac{n}{2}\ln(2\pi)$\\
+Used to optimise kernel hyperparameters (data-fit vs log-det complexity penalty).\\
+
+%% ---------------------------------------------------------------
+\textbf{GP for Classification}\\
+Latent function $f(\cdot)$: $f\sim\mathcal{N}(0,K)$, $K_{ij}=k(x_i,x_j)$.\\
+Likelihood: $p(y_i|f_i)=\sigma(y_i f_i)$. Posterior $p(f|y)\propto\mathcal{N}(f|0,K)\prod_i\sigma(y_if_i)$ is non-Gaussian (no closed form).\\
+MAP: $\hat f=\arg\min_f[\sum_i\ln(1+e^{-y_if_i})+\frac{1}{2}f^\top K^{-1}f]$\\
+Laplace approx: $\hat\Sigma=(K^{-1}+W)^{-1}$, $W$ diagonal of log-likelihood second derivatives.\\
+Predictive: $p(y_*=1|y)=\int\sigma(f_*)p(f_*|y)\,df_*$\\
+Decision boundary: $p(y_*=1|y)=0.5\Leftrightarrow\mu_*=0$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Multi-Output GPs (MOGP)}\\
+Separable kernel: $K(x,x')=k(x,x')B$; stacked covariance $\tilde K=K_x\otimes B$.\\
+$\tilde y\sim\mathcal{N}(0,K_x\otimes B+\sigma^2 I)$\\
+
+\textit{\textbf{RKHS Reproducing Property:}} $\forall f\in\mathcal{H}_k$: $f(x)=\langle f,k(x,\cdot)\rangle_{\mathcal{H}_k}$; $\|f\|_{\mathcal{H}_k}^2=\alpha^\top K\alpha$ for $f=\sum_i\alpha_i k(x_i,\cdot)$.\\
+
+\textit{\textbf{LMC:}} $f_q(x)=\sum_{r=1}^R w_{qr}u_r(x)$, $u_r\sim\mathcal{GP}(0,k_r)$ i.i.d.\\
+$[K(x,x')]_{pq}=\sum_{r=1}^R w_{pr}w_{qr}k_r(x,x')$\\
+Special case $R=1$: $K(x,x')=k(x,x')(ww^\top)$ (separable kernel).\\
+
+\textit{\textbf{Missing Outputs:}} $\begin{bmatrix}f_\mathrm{obs}\\f_\mathrm{miss}\end{bmatrix}\sim\mathcal{N}\!\left(0,\begin{bmatrix}K_{oo}&K_{om}\\K_{mo}&K_{mm}\end{bmatrix}\right)$\\
+$f_\mathrm{miss}|f_\mathrm{obs}\sim\mathcal{N}(K_{mo}K_{oo}^{-1}f_\mathrm{obs},\;K_{mm}-K_{mo}K_{oo}^{-1}K_{om})$\\
+
+%% ---------------------------------------------------------------
+\textbf{Optimisation and SGD}\\
+Mini-batch gradient: $\nabla L_S(\theta)=\frac{1}{|S|}\sum_{i\in S}\nabla\ell(f(x_i;\theta),y_i)$\\
+Unbiased: $\mathbb{E}[\nabla L_S(\theta)]=\nabla L(\theta)$\\
+Variance: $\operatorname{Var}[\nabla L_S(\theta)]=\frac{1}{|S|}\operatorname{Var}[\nabla\ell]$ (shrinks with batch size)\\
+
+\textit{\textbf{Adam Bias Correction}}\\
+$m_k=\beta_1 m_{k-1}+(1-\beta_1)g_k$, $m_0=0$. Unrolling:\\
+$m_k=(1-\beta_1)\sum_{s=1}^k\beta_1^{k-s}g_s$\\
+$\mathbb{E}[m_k]\approx(1-\beta_1)\mu\cdot\frac{1-\beta_1^k}{1-\beta_1}=\mu(1-\beta_1^k)$\\
+Bias-corrected: $\hat m_k=m_k/(1-\beta_1^k)$; likewise $\hat v_k=v_k/(1-\beta_2^k)$.\hfill$\square$\\
+
+\textit{\textbf{Hold-Out Validation is Unbiased}}\\
+Condition on $D$: $\mathbb{E}[e(f(\tilde x_j;D),\tilde y_j)|D]=E^*(D)$. Average over $m$ i.i.d.\ pairs and then over $D$: $\mathbb{E}[E_\mathrm{hold-out}]=\mathbb{E}_D[E^*(D)]=E^*$.\hfill$\square$\\
+
+\textit{\textbf{ROC-AUC = Pairwise Ranking Prob}}\\
+$\mathrm{AUC}=\frac{1}{n^+n^-}\sum_i\sum_j\bigl[\mathbf{1}(s_i^+>s_j^-)+\tfrac{1}{2}\mathbf{1}(s_i^+=s_j^-)\bigr]$\\
+Interpretation: probability a random positive is scored above a random negative.\hfill$\square$\\
+
+\textit{\textbf{Cover--Hart Theorem}} As $n\to\infty$, $x^{(1)}\to x$ and $y^{(1)}\perp\!\!\!\perp y|x$. Pointwise 1-NN error: $R_{1\text{-NN}}(x)=P(y\neq y^{(1)}|x)=2\eta(x)(1-\eta(x))=2R^*(x)(1-R^*(x))$. Since $R^*(x)\leq\frac{1}{2}$: $R_{1\text{-NN}}\leq 2\mathbb{E}[R^*(x)]=2R^*$.\hfill$\square$\\
+
+\textit{\textbf{Stone's Theorem (stated)}} If $k\to\infty$ and $k/n\to 0$: $R_{k\text{-NN}}\to R^*$. Excess risk $\lesssim\frac{1}{\sqrt{k}}+(\frac{k}{n})^{1/d}$; curse of dimensionality in the $1/d$ exponent.\\
+\\\\\\\\\\\\\\
+%% ---------------------------------------------------------------
+\textbf{Ensemble Methods: Bagging and Random Forests}\\
+
+\textit{\textbf{Bagging (Bootstrap Aggregating)}}\\
+Create $B$ bootstrap samples $\mathcal{D}^{(b)}\sim\mathrm{Bootstrap}(\mathcal{D})$. Train $f^{(b)}\leftarrow\mathcal{A}(\mathcal{D}^{(b)})$. Aggregate:\\
+$f_\mathrm{bag}(\mathbf{x})=\frac{1}{B}\sum_{b=1}^B f^{(b)}(\mathbf{x})$ (or majority vote).\\
+Each bootstrap sample excludes any given point with prob $(1-1/n)^n\approx e^{-1}\approx 0.37$; $\approx 63\%$ of points appear at least once.\\
+
+\textit{\textbf{Bagging Variance Reduction (Derivation)}}\\
+Assume $\mathbb{E}[f^{(b)}(\mathbf{x})]=\mu$, $\operatorname{Var}(f^{(b)}(\mathbf{x}))=\sigma^2$, $\operatorname{Corr}(f^{(b)},f^{(c)})=\rho$, $b\neq c$.\\
+$\operatorname{Var}\!\left(\sum_{b=1}^B f^{(b)}\right)=B\sigma^2+2\sum_{b<c}\rho\sigma^2=B\sigma^2+B(B-1)\rho\sigma^2$\\
+Divide by $B^2$:
+$\operatorname{Var}(f_\mathrm{bag}(\mathbf{x}))=\dfrac{1-\rho}{B}\sigma^2+\rho\sigma^2$\\
+$\rho=1$: no reduction ($\sigma^2$). $\rho=0$: optimal ($\sigma^2/B$). As $B\to\infty$: floor $\rho\sigma^2$.\hfill$\square$\\
+
+\textit{\textbf{Bias of Bagging:}} As $B\to\infty$, $f_\mathrm{bag}\to\mathbb{E}[f^{(b)}|\mathcal{D}]$. Bias $\approx$ bias of a single base model; larger $B$ removes Monte Carlo noise only.\\
+
+\textit{\textbf{Out-of-Bag (OOB) Error:}} Let $\mathcal{B}_i=\{b:(x_i,y_i)\notin\mathcal{D}^{(b)}\}$.\\
+$f_\mathrm{OOB}(x_i)=\frac{1}{|\mathcal{B}_i|}\sum_{b\in\mathcal{B}_i}f^{(b)}(x_i)$, $E_\mathrm{OOB}=\frac{1}{n}\sum_i e(y_i,f_\mathrm{OOB}(x_i))$.\\
+Provides a nearly free cross-validation estimate.\\
+
+\textit{\textbf{Random Forests:}} Reduce $\rho$ by randomly subsampling $q$ features at each split (instead of all $p$). Dominant predictors cannot monopolise splits; trees become more diverse. At each split: select $q\sim\sqrt{p}$ (classification) or $p/3$ (regression). Effect: $\sigma^2\uparrow$, $\rho\downarrow$; net result often $\operatorname{Var}\downarrow$.\\
+$f_\mathrm{RF}(\mathbf{x})=\frac{1}{B}\sum_{b=1}^B f^{(b)}(\mathbf{x})$; trees grown fully (low bias). Parallelisable; OOB error built-in. Bagging = variance reduction; Random Forests = variance reduction via decorrelated trees.\\
+
+%% ---------------------------------------------------------------
+\textbf{AdaBoost and Boosting}\\
+Ensemble: $h^{(B)}(\mathbf{x})=\sum_{b=1}^B\alpha^{(b)}f^{(b)}(\mathbf{x})$, $h^{(0)}=0$. Labels $y_i\in\{-1,+1\}$.\\
+Loss: $L(h^{(b)})=\sum_i\exp(-y_i h^{(b)}(x_i))$.\\
+
+\textit{\textbf{AdaBoost: Reweighting Derivation}}\\
+$h^{(b)}=h^{(b-1)}+\alpha^{(b)}f^{(b)}$. Substitute and factorise:\\
+$L(f^{(b)})=\sum_i\underbrace{\exp(-y_i h^{(b-1)}(x_i))}_{w_i^{(b)}}\exp(-y_i\alpha^{(b)}f^{(b)}(x_i))$\\
+Since $y_i f^{(b)}(x_i)\in\{-1,+1\}$, define $\omega_c(f)=\sum_i w_i^{(b)}\mathbf{1}[y_i=f(x_i)]$, $\omega_e(f)=\sum_i w_i^{(b)}\mathbf{1}[y_i\neq f(x_i)]$:\\
+$L(\alpha,f)=e^{-\alpha}\omega_c(f)+e^{\alpha}\omega_e(f)$\\
+
+\textit{\textbf{Step 1 -- Optimal $f^{(b)}$:}}\\$\omega=\omega_c+\omega_e$ is independent of $f$; since $e^\alpha-e^{-\alpha}>0$:\\
+$f^{(b)}=\arg\min_f\sum_i w_i^{(b)}\mathbf{1}[y_i\neq f(x_i)]$ (weighted 0-1 loss)\hfill$\square$\\
+
+\textit{\textbf{Step 2 -- Optimal $\alpha^{(b)}$:}}\\ Fix $f^{(b)}$, differentiate $L(\alpha)=e^{-\alpha}\omega_c+e^\alpha\omega_e$:\\
+$\frac{dL}{d\alpha}=-e^{-\alpha}\omega_c+e^\alpha\omega_e=0\Rightarrow e^{2\alpha}=\omega_c/\omega_e$\\
+$\alpha^{(b)}=\frac{1}{2}\ln\frac{\omega_c}{\omega_e}=\frac{1}{2}\ln\frac{1-\varepsilon^{(b)}}{\varepsilon^{(b)}}$, $\varepsilon^{(b)}=\omega_e/\omega$\hfill$\square$\\
+
+\textit{\textbf{Weight Update:}}\\ $w_i^{(b+1)}=\exp(-y_i h^{(b)}(x_i))=w_i^{(b)}\exp(-\alpha^{(b)}y_if^{(b)}(x_i))$\\
+Correct: $w\downarrow$; incorrect: $w\uparrow$. Requires $\varepsilon^{(b)}<0.5$.\\
+
+\textit{\textbf{Bagging vs Boosting:}} Bagging: parallel, bootstrap, reduces variance (high-variance models). Boosting: sequential, reweighting, reduces bias (high-bias models). $h^{(b)}$ approximates increasingly rich function class.\\
+
+\textit{\textbf{AdaBoost Limitations:}} Exponential loss: misclassified points receive exponentially large weight. Problematic for outliers/mislabelled data. Cannot be parallelised.\\
+
+%% ---------------------------------------------------------------
+\textbf{Gradient Boosting}\\
+Generalises boosting to any differentiable loss $\ell(y,h(x))$. Optimise in function space: represent model by $h(\mathbf{X})=(h(x_1),\ldots,h(x_n))$.\\
+
+\textit{\textbf{Pseudo-Residuals (Negative Gradients):}}\\
+$r_i^{(b)}=-\left.\frac{\partial\ell(y_i,z)}{\partial z}\right|_{z=h^{(b-1)}(x_i)}$\\
+
+\textit{\textbf{Algorithm:}} Init $h^{(0)}=\arg\min_c\sum_i\ell(y_i,c)$. For $b=1,\ldots,B$:\\
+(1) Compute $r_i^{(b)}$ for all $i$. \\
+(2) Fit regression tree $f^{(b)}$ to $\{(x_i,r_i^{(b)})\}$. \\
+(3) Line search: $\alpha^{(b)}=\arg\min_\alpha\sum_i\ell(y_i,h^{(b-1)}(x_i)+\alpha f^{(b)}(x_i))$. \\
+(4) Update: $h^{(b)}(x)=h^{(b-1)}(x)+\gamma\alpha^{(b)}f^{(b)}(x)$, $\gamma\in(0,1]$.\\
+
+\textit{\textbf{Special Cases:}}\\
+Squared loss: $\ell=(y-h)^2\Rightarrow r_i^{(b)}=y_i-h^{(b-1)}(x_i)$ (residual fitting).\\
+Exponential loss: $\ell=\exp(-yh)\Rightarrow$ recovers AdaBoost.\\
+Logistic loss: $\ell=\log(1+\exp(-yh))\Rightarrow$ more robust (LogitBoost).\\
+
+\textit{\textbf{Logistic Pseudo-Residuals:}}\\
+$\frac{\partial\ell}{\partial z}=\frac{-y}{1+\exp(yz)}\Rightarrow r_i^{(b)}=\frac{y_i}{1+\exp(y_ih^{(b-1)}(x_i))}=w_i^{(b)}y_i$\\
+$w_i^{(b)}=\frac{1}{1+\exp(y_ih^{(b-1)}(x_i))}\in(0,1]$: weights change \emph{gradually} (vs AdaBoost's exponential blow-up).\\
+
+\textit{\textbf{Binary Classification Base Learner:}} \\With $r_i^{(b)}=w_i^{(b)}y_i$, fitting $f$ to $(x_i,r_i^{(b)})$ by squared loss $\equiv$ minimising $\sum_i w_i^{(b)}\mathbf{1}[y_i\neq f(x_i)]$, same as AdaBoost but different weights. Key: Boosting $=$ gradient descent in function space.\\
+
+\textit{\textbf{Stochastic Gradient Boosting:}} \\At each iteration $b$, sample $\mathcal{D}^{(b)}\subset\mathcal{D}$ without replacement ($\approx 50$--$80\%$ of data). Fit $f^{(b)}$ using only $\mathcal{D}^{(b)}$; update unchanged. Reduces correlation between learners $\Rightarrow$ lower variance. Combines bias reduction (boosting) with variance reduction (subsampling like bagging).\\
+
+%% ---------------------------------------------------------------
+\textbf{Optimisation: Adaptive Methods}\\
+
+\textit{\textbf{Full Adam Update:}} Initialise $m_0=v_0=0$, $\beta_1=0.9$, $\beta_2=0.999$, $\varepsilon=10^{-8}$.\\
+$m_k=\beta_1 m_{k-1}+(1-\beta_1)g_k$ (1st moment)\\
+$v_k=\beta_2 v_{k-1}+(1-\beta_2)g_k^2$ (2nd moment, elementwise)\\
+$\hat m_k=m_k/(1-\beta_1^k)$,\quad $\hat v_k=v_k/(1-\beta_2^k)$\\
+$\theta_{k+1}=\theta_k-\eta\,\dfrac{\hat m_k}{\sqrt{\hat v_k}+\varepsilon}$\\
+Intuition: adapts per-parameter learning rate; $\sqrt{\hat v_k}$ scales by RMS of past gradients; $\hat m_k$ provides momentum.\\
+\\\\
+\textit{\textbf{AdaGrad:}} Accumulate squared gradients $V_k=\sum_{s=1}^k g_s^2$ (elementwise).\\
+$\theta_{k+1}=\theta_k-\dfrac{\eta}{\sqrt{V_k}+\varepsilon}\odot g_k$\\
+Monotonically increasing $V_k$ $\Rightarrow$ learning rate only decreases. Good for sparse gradients; may stop learning too early for dense.\\
+
+\textit{\textbf{RMSProp:}} Exponential moving average of squared gradients.\\
+$v_k=\beta v_{k-1}+(1-\beta)g_k^2$\\
+$\theta_{k+1}=\theta_k-\dfrac{\eta}{\sqrt{v_k}+\varepsilon}\odot g_k$\\
+Fixes AdaGrad's diminishing LR by forgetting old gradients. Adam $=$ RMSProp $+$ momentum $+$ bias correction.\\
+
+%% ---------------------------------------------------------------
+\textbf{Performance Evaluation Metrics}\\
+
+\textit{\textbf{Confusion Matrix Components:}} TP, FP, TN, FN from predicted vs actual class.\\
+$\mathrm{Accuracy}=\dfrac{TP+TN}{TP+FP+TN+FN}$\\
+$\mathrm{Precision}=\dfrac{TP}{TP+FP}$,\quad $\mathrm{Recall}=\mathrm{Sensitivity}=\dfrac{TP}{TP+FN}$\\
+$\mathrm{Specificity}=\dfrac{TN}{TN+FP}$,\quad $\mathrm{FPR}=\dfrac{FP}{FP+TN}=1-\mathrm{Spec.}$\\
+ROC plots TPR (Recall) vs FPR across thresholds.\\
+
+\textit{\textbf{F-Scores:}}\\
+$F_1=\dfrac{2\cdot\mathrm{Precision}\cdot\mathrm{Recall}}{\mathrm{Precision}+\mathrm{Recall}}=\dfrac{2TP}{2TP+FP+FN}$ (harmonic mean)\\
+$F_\beta=\dfrac{(1+\beta^2)\cdot\mathrm{Precision}\cdot\mathrm{Recall}}{\beta^2\cdot\mathrm{Precision}+\mathrm{Recall}}$; $\beta>1$ weights recall, $\beta<1$ weights precision.\\
+
+\textit{\textbf{Macro vs Micro Averaging (Multiclass, $C$ classes):}}\\
+Macro: compute metric per class, then average (treats all classes equally regardless of size):\\
+$\mathrm{Macro\text{-}P}=\frac{1}{C}\sum_{c=1}^C\mathrm{Precision}_c$\\
+Micro: aggregate TP, FP, FN across all classes, then compute (weights by class frequency):\\
+$\mathrm{Micro\text{-}P}=\dfrac{\sum_c TP_c}{\sum_c(TP_c+FP_c)}$\\
+Macro is sensitive to rare class performance; micro is dominated by large classes.\\
+
+%% ---------------------------------------------------------------
+\textbf{Regularisation: Lasso and Ridge}\\
+
+\textit{\textbf{Ridge ($\ell_2$):}} $\hat\theta=\arg\min_\theta\frac{1}{n}\|X\theta-y\|_2^2+\lambda\|\theta\|_2^2=(X^\top X+n\lambda I)^{-1}X^\top y$. Shrinks all coefficients; closed-form solution; always invertible.\\
+
+\textit{\textbf{Lasso ($\ell_1$):}} $\hat\theta=\arg\min_\theta\frac{1}{n}\|X\theta-y\|_2^2+\lambda\|\theta\|_1$. Promotes sparsity (many $\hat\theta_j=0$) due to non-smooth $\ell_1$ ball corners. No closed form; solved via coordinate descent or subgradient methods.\\
+
+\textit{\textbf{Geometric intuition:}} Ridge constraint is a ball $\|\theta\|_2^2\leq t$ (smooth); least-squares contours touch it at non-sparse points. Lasso constraint is a diamond $\|\theta\|_1\leq t$ (corners on axes); contours likely touch at corners $\Rightarrow$ sparsity.\\
+
+%% ---------------------------------------------------------------
+\textbf{Additional Kernels}\\
+
+\textit{\textbf{Kernel-Induced Distance:}}\\
+$\mathrm{dist}_k^2(x,x')=k(x,x)+k(x',x')-2k(x,x')$\\
+(Squared Euclidean distance in the RKHS feature space $\phi$.)\\
+
+\textit{\textbf{RBF/Gaussian Kernel:}} $k(x,x')=\exp\!\left(-\dfrac{\|x-x'\|_2^2}{2\ell^2}\right)$\\
+Smooth, infinitely differentiable; infinite-dimensional feature map.\\
+
+\textit{\textbf{Laplacian Kernel:}} $k(x,x')=\exp\!\left(-\dfrac{\|x-x'\|_1}{\sigma}\right)$\\
+Uses $\ell_1$ distance; less smooth than RBF; more robust to outliers.\\
+
+\textit{\textbf{Sigmoid Kernel:}} $k(x,x')=\tanh(\gamma x^\top x'+c)$\\
+Not always PSD (valid only for certain $\gamma,c$); related to neural networks.\\
+
+\textit{\textbf{Polynomial Kernel (general):}} $k(x,x')=(x^\top x'+c)^d$, $c\geq 0$, $d\in\mathbb{Z}^+$. Always PSD; explicit feature map is degree-$d$ monomials.\\
+
+%% ---------------------------------------------------------------
+\textbf{High-Dimensional Geometry}\\
+
+\textit{\textbf{Curse of Dimensionality (Volume):}} To capture fraction $p$ of data uniformly distributed in $[0,1]^d$, a hypercube side length $\ell$ satisfies:\\
+$\ell^d=p\Rightarrow\ell=p^{1/d}$\\
+For $d=10$, $p=0.01$: $\ell=0.01^{0.1}\approx0.63$. Even a tiny fraction requires most of the range in each dimension.\\
+
+%% ---------------------------------------------------------------
+\textbf{Regression Loss Functions}\\
+
+\textit{\textbf{Huber Loss:}} Interpolates between squared and absolute loss.\\
+$\ell_\delta(r)=\begin{cases}\frac{1}{2}r^2 & |r|\leq\delta\\\delta(|r|-\frac{1}{2}\delta) & |r|>\delta\end{cases}$\\
+Quadratic for small residuals (smooth, efficient); linear for large (robust to outliers). Bayes-optimal predictor: conditional mean (for symmetric noise). Requires tuning $\delta$.\\
+
+%% ---------------------------------------------------------------
+\textbf{Poisson Distribution}\\
+$p(y;\lambda)=\dfrac{\lambda^y e^{-\lambda}}{y!}$, $y\in\{0,1,2,\ldots\}$, $\lambda>0$.\\
+$\mathbb{E}[y]=\lambda$, $\operatorname{Var}(y)=\lambda$. Mean $=$ Variance.\\
+NLL: $-\ln p(y;\lambda)=\lambda-y\ln\lambda+\ln y!$. With $\lambda_i=\exp(\theta^\top x_i)$:\\
+$\mathrm{NLL}=\sum_i(e^{\theta^\top x_i}-y_i\theta^\top x_i)+\mathrm{const}$\\
+Link function: $\phi(\mu)=\log\mu$ (log link); keeps rate $\lambda>0$ for all $\theta$.\\
+
+\end{multicols*}
+\end{document}
