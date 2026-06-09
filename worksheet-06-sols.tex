@@ -21,7 +21,7 @@
         \Large \textbf{STAT3006 Worksheet 06}
     \end{center}
 
-    \Large \textbf{1. Read AdaBoost}
+    \Large \textbf{1. Real AdaBoost}
 
     \large Real AdaBoost is an additive boosting method that constructs a strong classifier by 
     iteratively
@@ -33,14 +33,14 @@
     \begin{align*}
         \begin{matrix}
             h^{(B)}(\mathbf{x}) = \sum_{b = 1}^B \nu f^{(b)}(\mathbf{x}),
-            & f^(b)(\mathbf{x}) \in \mathbb{R}
+            & f^{(b)}(\mathbf{x}) \in \mathbb{R}
         \end{matrix}
     \end{align*}
 
     where $\nu > 0$ is a shrinkage parameter. In this exercise, we set $\nu = 1$ so that 
 
     \begin{align*}
-        h^{(b)}(\mathbf{x}) = \sum_{b = 1}^B f^(b)(\mathbf{x})
+        h^{(b)}(\mathbf{x}) = \sum_{b = 1}^B f^{(b)}(\mathbf{x})
     \end{align*}
 
     The final classifier is 
@@ -131,7 +131,7 @@
     \begin{align*}
         \sum_{i \in R_j, y_i = 1} w^{(b)}_i \exp (-\gamma_j) 
         =& \sum_{i \in R_j, y_i = -1} w^{(b)}_i \exp (\gamma_j) \\ 
-        \frac{\exp(\gamma_j)}{\exp(\gamma_j)}
+        \frac{\exp(\gamma_j)}{\exp(-\gamma_j)}
          &= \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
          \exp(2 \gamma_j)
          &= \frac{\sum_{i \in R_j, y_i = 1}w^{(b)}_i}{\sum_{i \in R_j, y_i = -1}w^{(b)}_i} \\ 
